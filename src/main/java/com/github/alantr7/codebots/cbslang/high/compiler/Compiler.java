@@ -28,6 +28,11 @@ public class Compiler {
     @Getter
     private final Scope globalScope = new Scope();
 
+    public void experimentalCompile() {
+        compileSignatures();
+        ast.functions.values().forEach(this::compileFunction);
+    }
+
     public void compileConstant(String type, Object value) {
         builder.append("defc ").append(type).append(", ").append(value).append("\n");
     }

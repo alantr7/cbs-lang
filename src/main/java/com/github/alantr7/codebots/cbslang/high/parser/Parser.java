@@ -2,10 +2,8 @@ package com.github.alantr7.codebots.cbslang.high.parser;
 
 import com.github.alantr7.codebots.cbslang.exceptions.ParserException;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.FunctionSignature;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Primitive;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Type;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Variable;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
 
 import java.util.Arrays;
 
@@ -123,6 +121,9 @@ public class Parser {
 
         FunctionSignature signature = new FunctionSignature(null, name, type, Arrays.copyOf(parameterTypes, parameterCount));
         ast.signatures.add(signature);
+
+        Function function = new Function(signature, new Statement[0]);
+        ast.functions.put(name, function);
 
         System.out.println("Function parsed!");
     }
