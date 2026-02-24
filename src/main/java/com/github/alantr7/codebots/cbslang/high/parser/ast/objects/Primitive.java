@@ -8,4 +8,6 @@ public class Primitive extends Type {
 
     public static final Primitive STRING = new Primitive();
 
+    public static final Primitive VOID = new Primitive();
+
 }

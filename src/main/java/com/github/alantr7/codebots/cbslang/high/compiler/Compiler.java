@@ -1,5 +1,6 @@
 package com.github.alantr7.codebots.cbslang.high.compiler;
 
+import com.github.alantr7.codebots.cbslang.exceptions.ParserException;
 import com.github.alantr7.codebots.cbslang.high.parser.Parser;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.*;
@@ -398,7 +399,7 @@ public class Compiler {
         return builder.toString();
     }
 
-    public static Program compile(String code) {
+    public static Program compile(String code) throws ParserException {
         Parser.parse(code);
         return null;
     }
