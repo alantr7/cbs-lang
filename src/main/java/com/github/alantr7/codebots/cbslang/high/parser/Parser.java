@@ -5,6 +5,9 @@ import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.FunctionSignature;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Primitive;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Type;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Variable;
+
+import java.util.Arrays;
 
 public class Parser {
 
@@ -12,8 +15,11 @@ public class Parser {
 
     private final AST ast = new AST();
 
+    private final ParserContext context = new ParserContext();
+
     public Parser(TokenQueue tokens) {
         this.tokens = tokens;
+        this.context.scopes.push(new Scope());
     }
 
     AST parse() throws ParserException {
@@ -41,7 +47,7 @@ public class Parser {
             }
 
         }
-        return null;
+        return ast;
     }
 
     void parseFunctionOrVariable() throws ParserException {
@@ -74,8 +80,39 @@ public class Parser {
 
     void parseFunction(Type type, String name) throws ParserException {
         ParserHelper.expect(tokens.next(), "(");
+        Scope functionScope = context.getCurrentScope().createChild();
 
-        // todo: parse parameters
+        int variableOffset = 0;
+
+        Type[] parameterTypes = new Type[8];
+        int parameterCount = 0;
+        for (; parameterCount < parameterTypes.length; parameterCount++) {
+            String rawParameterType = tokens.peek();
+            if (rawParameterType.equals(")"))
+                break;
+
+            tokens.advance();
+            Type parameterType = switch (rawParameterType) {
+                case "int" -> Primitive.INT;
+                case "float" -> Primitive.FLOAT;
+                case "string" -> Primitive.STRING;
+                default -> null;
+            };
+            if (parameterType == null)
+                throw new ParserException("Unexpected token '" + rawParameterType + "'.");
+
+            String parameterName = tokens.next();
+
+            parameterTypes[parameterCount] = parameterType;
+            functionScope.variables.put(parameterName, new Variable(parameterType, false, variableOffset++, 1));
+
+            if (tokens.peek().equals(",")) {
+                tokens.advance();
+                continue;
+            }
+
+            break;
+        }
 
         ParserHelper.expect(tokens.next(), ")");
         ParserHelper.expect(tokens.next(), "{");
@@ -84,7 +121,7 @@ public class Parser {
 
         ParserHelper.expect(tokens.next(), "}");
 
-        FunctionSignature signature = new FunctionSignature(null, name, type, new Type[0]);
+        FunctionSignature signature = new FunctionSignature(null, name, type, Arrays.copyOf(parameterTypes, parameterCount));
         ast.signatures.add(signature);
 
         System.out.println("Function parsed!");
