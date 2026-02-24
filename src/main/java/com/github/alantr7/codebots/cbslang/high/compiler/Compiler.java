@@ -35,7 +35,9 @@ public class Compiler {
     public void compileSignatures() {
         builder.append("; Imports\n");
         for (FunctionSignature signature : ast.signatures) {
-            builder.append("impf ").append(signature.module).append(", ").append(signature.name).append("\n");
+            if (signature.module != null) {
+                builder.append("impf ").append(signature.module).append(", ").append(signature.name).append("\n");
+            }
         }
         builder.append("\n");
     }
@@ -400,7 +402,7 @@ public class Compiler {
     }
 
     public static Program compile(String code) throws ParserException {
-        Parser.parse(code);
+        AST ast = Parser.parse(code);
         return null;
     }
 
