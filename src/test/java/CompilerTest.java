@@ -40,7 +40,7 @@ public class CompilerTest {
             new Literal(Literal.INT, 0),
           }),
         }));
-        compiler.append("pop int");
+        compiler.append("pop");
     }
 
     @Test
@@ -68,7 +68,7 @@ public class CompilerTest {
         Variable a = new Variable(Primitive.INT, true, 0, 1);
         compiler.compileVariableDeclare(a);
         compiler.compileExpression(new Assign(a, new Operand[0], new Literal(Literal.INT, 8)));
-        compiler.append("pop int");
+        compiler.append("pop");
 
         compiler.compileExpression(new Arithmetic(new Operand[]{
           new Literal(Literal.INT, 7),
@@ -82,12 +82,15 @@ public class CompilerTest {
     public void compileFunctionCall() {
         FunctionSignature random = new FunctionSignature("system", "random", Primitive.INT, new Type[0]);
         FunctionSignature print = new FunctionSignature("system", "print", Primitive.INT, new Type[]{ Primitive.INT });
+        compiler.ast.signatures.add(random);
+        compiler.ast.signatures.add(print);
+        compiler.compileSignatures();
         compiler.compileExpression(new Call(print, new Operand[][]{
           {
             new Call(random, new Operand[0][]),
           }
         }));
-        compiler.append("pop int");
+        compiler.append("pop");
     }
 
     @Test
