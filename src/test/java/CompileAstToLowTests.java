@@ -11,13 +11,12 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class CompilerTest {
+public class CompileAstToLowTests {
 
     Compiler compiler = new Compiler(new AST());
 
