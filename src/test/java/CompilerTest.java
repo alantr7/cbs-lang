@@ -35,6 +35,17 @@ public class CompilerTest {
         compiler.experimentalCompile();
     }
 
+    @Test
+    public void testFunctionWithVariableDeclare() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int add(int a, int b) {
+            int c;
+            int d;
+          }
+          """));
+        compiler.experimentalCompile();
+    }
+
     @After
     public void showResults() throws Exception {
         ModuleRepository repository = new ModuleRepository();

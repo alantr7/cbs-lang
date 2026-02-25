@@ -58,7 +58,10 @@ public class Compiler {
         }
 
         for (Statement stmt : function.body) {
-            if (stmt instanceof Assign assign) {
+            if (stmt instanceof Declare declare) {
+                compileVariableDeclare(declare);
+            }
+            else if (stmt instanceof Assign assign) {
                 compileExpression(assign);
                 builder.append("pop\n");
             }
@@ -393,6 +396,7 @@ public class Compiler {
 
         if (declare.value != null) {
             compileExpression(declare.value);
+            // todo: don't i need to pop here?
         } else {
             builder.append("add esp, ").append(sum).append("\n");
         }

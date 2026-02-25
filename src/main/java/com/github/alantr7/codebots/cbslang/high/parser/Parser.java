@@ -3,6 +3,7 @@ package com.github.alantr7.codebots.cbslang.high.parser;
 import com.github.alantr7.codebots.cbslang.exceptions.ParserException;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Declare;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
 
 import java.util.Arrays;
@@ -71,7 +72,7 @@ public class Parser {
             return;
         }
         if (differentiator.equals("=") || differentiator.equals(";")) {
-            parseVariable(type, name);
+            parseVariableDeclare(type, name);
             return;
         }
     }
@@ -116,20 +117,58 @@ public class Parser {
         ParserHelper.expect(tokens.next(), "{");
 
         // todo: parse function body
+        Statement[] body = new Statement[128];
+        int statementCount = 0;
+        for (; statementCount < body.length; statementCount++) {
+            if (tokens.peek().equals("}"))
+                break;
+
+            Statement statement = parseStatement();
+            if (statement == null)
+                break;
+
+            body[statementCount] = statement;
+        }
 
         ParserHelper.expect(tokens.next(), "}");
 
         FunctionSignature signature = new FunctionSignature(null, name, type, Arrays.copyOf(parameterTypes, parameterCount));
         ast.signatures.add(signature);
 
-        Function function = new Function(signature, new Statement[0]);
+        Function function = new Function(signature, Arrays.copyOf(body, statementCount));
         ast.functions.put(name, function);
 
         System.out.println("Function parsed!");
     }
 
-    void parseVariable(Type type, String name) {
+    Statement parseStatement() throws ParserException {
+        String nextToken = tokens.peek();
 
+        // todo: ifs, else-ifs, loops, etc.
+        tokens.advance();
+        Type parameterType = switch (nextToken) {
+            case "int" -> Primitive.INT;
+            case "float" -> Primitive.FLOAT;
+            case "string" -> Primitive.STRING;
+            default -> null;
+        };
+
+        if (parameterType == null)
+            throw new ParserException("Unexpected token '" + nextToken + "'.");
+
+        return parseVariableDeclare(parameterType, tokens.next());
+    }
+
+    Declare parseVariableDeclare(Type type, String name) {
+        if (tokens.peek().equals(";")) {
+            tokens.advance();
+            // no assignment
+            // todo: arrays
+            return new Declare(type, null, new int[] { 1 });
+        }
+
+        // todo: assignment
+        return null;
     }
 
     public static AST parse(String code) throws ParserException {
