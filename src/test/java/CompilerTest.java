@@ -46,6 +46,16 @@ public class CompilerTest {
         compiler.experimentalCompile();
     }
 
+    @Test
+    public void testFunctionWithSimpleExpression() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int add(int a, int b) {
+            2+(5+5)*2
+          }
+          """));
+        compiler.experimentalCompile();
+    }
+
     @After
     public void showResults() throws Exception {
         ModuleRepository repository = new ModuleRepository();

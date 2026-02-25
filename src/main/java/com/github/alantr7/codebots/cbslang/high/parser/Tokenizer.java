@@ -73,7 +73,7 @@ public class Tokenizer {
 
                 if (!token.isBlank()) {
                     // Check if it's a negative number
-                    if (token.matches("\\d+")) {
+                    if (token.matches("\\d+") && tokens.size() > 1) {
                         String previous = tokens.get(tokens.size() - 1);
                         String previous2 = tokens.get(tokens.size() - 2);
 

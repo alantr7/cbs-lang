@@ -1,6 +1,8 @@
 package com.github.alantr7.codebots.cbslang.high.parser.ast.expressions;
 
-public class Arithmetic implements Operand {
+import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
+
+public class Arithmetic implements Statement, Operand {
 
     public Operand[] operands;
 

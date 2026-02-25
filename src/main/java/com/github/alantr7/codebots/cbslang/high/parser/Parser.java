@@ -2,11 +2,17 @@ package com.github.alantr7.codebots.cbslang.high.parser;
 
 import com.github.alantr7.codebots.cbslang.exceptions.ParserException;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.Arithmetic;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.Literal;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.Operand;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.Operator;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Declare;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Stack;
 
 public class Parser {
 
@@ -51,13 +57,7 @@ public class Parser {
 
     void parseFunctionOrVariable() throws ParserException {
         String rawType = tokens.next();
-        Type type = switch (rawType) {
-            case "int" -> Primitive.INT;
-            case "float" -> Primitive.FLOAT;
-            case "string" -> Primitive.STRING;
-            case "void" -> Primitive.VOID;
-            default -> null;
-        };
+        Type type = parseType(rawType);
 
         // todo: check if it's variable or function anyway and then throw exception with more useful message
         if (type == null)
@@ -91,12 +91,7 @@ public class Parser {
                 break;
 
             tokens.advance();
-            Type parameterType = switch (rawParameterType) {
-                case "int" -> Primitive.INT;
-                case "float" -> Primitive.FLOAT;
-                case "string" -> Primitive.STRING;
-                default -> null;
-            };
+            Type parameterType = parseType(rawParameterType);
             if (parameterType == null)
                 throw new ParserException("Unexpected token '" + rawParameterType + "'.");
 
@@ -146,17 +141,16 @@ public class Parser {
 
         // todo: ifs, else-ifs, loops, etc.
         tokens.advance();
-        Type parameterType = switch (nextToken) {
-            case "int" -> Primitive.INT;
-            case "float" -> Primitive.FLOAT;
-            case "string" -> Primitive.STRING;
-            default -> null;
-        };
 
-        if (parameterType == null)
-            throw new ParserException("Unexpected token '" + nextToken + "'.");
+        Type parameterType = parseType(nextToken);
+        if (parameterType != null) {
+            return parseVariableDeclare(parameterType, tokens.next());
+        }
 
-        return parseVariableDeclare(parameterType, tokens.next());
+        tokens.rollback();
+
+        // todo: other types of expressions
+        return (Arithmetic) parseExpression();
     }
 
     Declare parseVariableDeclare(Type type, String name) {
@@ -169,6 +163,170 @@ public class Parser {
 
         // todo: assignment
         return null;
+    }
+
+    Operand parseExpression() {
+        int j = 0;
+        var stack = new Stack<String>();
+
+        var postfix = new LinkedList<Operand>();
+
+        stack.push("#");
+
+        boolean expectsOperator = false;
+        int parenthesisOpen = 0;
+
+        while (!tokens.isEmpty()) {
+            var next = tokens.peek();
+
+            tokens.advance();
+
+            if (expectsOperator && !ParserHelper.isOperator(next)) {
+                tokens.rollback();
+                break;
+            }
+
+            if (next.equals(")") && parenthesisOpen == 0) {
+                tokens.rollback();
+                break;
+            }
+
+            if (next.equals(";")) {
+                tokens.rollback();
+                break;
+            }
+
+            // TODO: Used !isOperator before, it must support parenthesis!
+            if (ParserHelper.isNumber(next)) {
+                postfix.add(new Literal(Literal.INT, Integer.parseInt(next)));
+                j++;
+
+                expectsOperator = true;
+            }
+            // todo: should i do null? probs not
+//            else if (ParserHelper.isNull(next)) {
+//                postfix.add(new LiteralExpression("null", LiteralExpression.NULL));
+//                j++;
+//
+//                expectsOperator = true;
+//            }
+            else if (ParserHelper.isOperator(next)) {
+                if (next.equals("(")) {
+                    stack.push(next);
+                    parenthesisOpen++;
+//                }
+                } else {
+                    if (next.equals(")")) {
+                        if (stack.isEmpty())
+                            return null;
+
+                        while (!stack.peek().equals("(")) {
+                            var popInParenthesis = stack.pop();
+                            // second argument was a string in old code. if this breaks that's the cause
+                            Operand operator = parseOperator(popInParenthesis);
+                            postfix.add(operator != null ? operator : new Literal(Literal.INT, Integer.parseInt(popInParenthesis)));
+                            j++;
+                        }
+
+                        parenthesisOpen--;
+                        stack.pop(); // pop out '('
+                    } else {
+
+                        if (ParserHelper.getPrecedence(next) > ParserHelper.getPrecedence(stack.peek())) {
+                            stack.push(next);
+                        } else {
+                            while (ParserHelper.getPrecedence(next) <= ParserHelper.getPrecedence(stack.peek())) {
+                                // todo: operator might be ( or ) but i highly doubt it
+                                postfix.add(parseOperator(stack.pop()));
+                                j++;
+                            }
+
+                            stack.push(next);
+                        }
+
+                        expectsOperator = false;
+//                    }
+//                }
+                    }
+                }
+            } else {
+
+                // Check if it's a record instantiation
+//                if (next.equals("new")) {
+//                    var recordInstantiate = nextRecordInstantiate();
+//                    if (recordInstantiate == null)
+//                        break;
+//
+//                    expectsOperator = true;
+//                    postfix.add(recordInstantiate);
+//                    continue;
+//                }
+//
+                 // can not mix strings with numbers here!
+//                if (next.startsWith("\"") && next.endsWith("\"")) {
+//                    postfix.add(new Literal(next.substring(1, next.length() - 1), LiteralExpression.STRING));
+//                } else {
+                    tokens.rollback();
+
+                    // todo
+//                    var memberAccess = nextMemberAccessOrArrayOrCall();
+//                    if (memberAccess == null) {
+//                        break;
+//                    } else {
+//                        postfix.add(memberAccess);
+//                    }
+//                }
+
+                expectsOperator = true;
+
+            }
+
+        }
+
+        while (!stack.peek().equals("#")) {
+            var pop = stack.pop();
+            postfix.add(parseOperator(pop));
+            j++;
+        }
+
+        for (int i = 0; i < postfix.size(); i++) {
+            Operand operand = postfix.get(i);
+            if (operand instanceof Operator operator) {
+                // consume two literals
+                Operand prev2 = postfix.remove(i - 1);
+                i--;
+
+                Operand prev1 = postfix.remove(i - 1);
+                i--;
+
+                postfix.remove(i);
+                postfix.add(i, new Arithmetic(new Operand[]{
+                  prev1, prev2, operator
+                }));
+            }
+        }
+
+        return postfix.getFirst();
+    }
+
+    Operand parseOperator(String raw) {
+        return switch (raw) {
+            case "+" -> Operator.ADD;
+            case "-" -> Operator.SUB;
+            case "*" -> Operator.MUL;
+            case "/" -> Operator.DIV;
+            default -> null;
+        };
+    }
+
+    Type parseType(String token) {
+        return switch (token) {
+            case "int" -> Primitive.INT;
+            case "float" -> Primitive.FLOAT;
+            case "string" -> Primitive.STRING;
+            case "void" -> Primitive.VOID;
+            default -> null;
+        };
     }
 
     public static AST parse(String code) throws ParserException {

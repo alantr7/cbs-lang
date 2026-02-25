@@ -58,18 +58,7 @@ public class Compiler {
         }
 
         for (Statement stmt : function.body) {
-            if (stmt instanceof Declare declare) {
-                compileVariableDeclare(declare);
-            }
-            else if (stmt instanceof Assign assign) {
-                compileExpression(assign);
-                builder.append("pop\n");
-            }
-            else if (stmt instanceof Call call) {
-                compileExpression(call);
-                builder.append("pop\n");
-            }
-            else if (stmt instanceof Ret ret) {
+            if (stmt instanceof Ret ret) {
                 compileExpression(ret.value);
                 builder.append("pop rax\n");
 
@@ -78,6 +67,8 @@ public class Compiler {
                 } else {
                     builder.append("ret\n");
                 }
+            } else {
+                compileStatement(stmt);
             }
         }
 
@@ -217,6 +208,11 @@ public class Compiler {
 
         else if (statement instanceof For loop) {
             compileFor(loop);
+        }
+
+        else if (statement instanceof Operand expression) {
+            compileExpression(expression);
+            append("pop");
         }
     }
 
