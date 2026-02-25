@@ -141,6 +141,17 @@ public class CompilerTest {
         compiler.experimentalCompile();
     }
 
+    @Test
+    public void testFunctionWithComparisonExpressions() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int main() {
+            int a = 3;
+            return a < 5;
+          }
+          """));
+        compiler.experimentalCompile();
+    }
+
     @After
     public void showResults() throws Exception {
         ModuleRepository repository = new ModuleRepository();

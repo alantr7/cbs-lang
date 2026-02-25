@@ -111,13 +111,19 @@ public class ProgramExecutor {
     void handleJMP(String[] instruction, byte condition) {
         assert condition >= JNE && condition <= JG;
 
-        if (condition != JMP && condition != JNE && condition != JL && condition != JG && condition != CALL && condition != (int) program.state.REGISTER_CMP.getValue())
+        if (condition != JMP && condition != JNE && condition != JLE && condition != JL && condition != JGE && condition != JG && condition != CALL && condition != (int) program.state.REGISTER_CMP.getValue())
             return;
 
         if (condition == JNE && 0 == (int) program.state.REGISTER_CMP.getValue())
             return;
 
+        if (condition == JLE && (int) program.state.REGISTER_CMP.getValue() == 1)
+            return;
+
         if (condition == JL && (int) program.state.REGISTER_CMP.getValue() != -1)
+            return;
+
+        if (condition == JGE && (int) program.state.REGISTER_CMP.getValue() == -1)
             return;
 
         if (condition == JG && (int) program.state.REGISTER_CMP.getValue() != 1)

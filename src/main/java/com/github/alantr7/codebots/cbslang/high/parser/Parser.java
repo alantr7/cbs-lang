@@ -355,7 +355,10 @@ public class Parser {
                 i--;
 
                 postfix.remove(i);
-                if (operator == Operator.AND || operator == Operator.OR) {
+                if (operator.type >= (byte) 20) {
+                    postfix.add(i, new Compare(prev1, operator.type, prev2));
+                }
+                else if (operator.type >= (byte) 10) {
                     postfix.add(i, new Logical(new Operand[]{
                       prev1, operator, prev2
                     }));
@@ -419,6 +422,13 @@ public class Parser {
 
             case "&&" -> Operator.AND;
             case "||" -> Operator.OR;
+
+            case "==" -> Operator.EQUALS;
+            case "!=" -> Operator.NOT_EQUALS;
+            case "<" -> Operator.LESS_THAN;
+            case "<=" -> Operator.LESS_EQUALS;
+            case ">" -> Operator.GREATER_THAN;
+            case ">=" -> Operator.GREATER_EQUALS;
 
             default -> null;
         };
