@@ -105,6 +105,7 @@ public class Parser {
                 continue;
             }
 
+            parameterCount++;
             break;
         }
 
@@ -176,7 +177,7 @@ public class Parser {
         tokens.rollback();
 
         // todo: other types of expressions
-        return (Arithmetic) parseExpression();
+        return (Statement) parseExpression();
     }
 
     Declare parseVariableDeclare(Type type, String name) throws ParserException {
@@ -368,11 +369,31 @@ public class Parser {
 
         if (tokens.peek().equals("(")) {
             tokens.advance();
-            ParserHelper.expect(tokens.next(), ")");
 
             Function function = ast.functions.get(variableName);
-            if (function != null)
-                return new Call(function.signature, new Operand[0][0]);
+            if (function == null)
+                throw new ParserException("Unknown member '" + variableName + "'.");
+
+            Operand[][] arguments = new Operand[8][1];
+            int argumentCount = 0;
+            for (; argumentCount < arguments.length; argumentCount++) {
+                if (tokens.peek().equals(")")) {
+                    tokens.advance();
+                    break;
+                }
+
+                Operand argument = parseExpression();
+                arguments[argumentCount][0] = argument;
+
+                if (tokens.peek().equals(")")) {
+                    tokens.advance();
+                    argumentCount++;
+                    break;
+                }
+                ParserHelper.expect(tokens.next(), ",");
+            }
+
+            return new Call(function.signature, Arrays.copyOf(arguments, argumentCount));
         }
         else {
             Variable variable = context.getCurrentScope().variables.get(variableName);

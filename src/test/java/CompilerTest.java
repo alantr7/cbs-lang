@@ -113,6 +113,21 @@ public class CompilerTest {
         compiler.experimentalCompile();
     }
 
+    @Test
+    public void testFunctionWithExpressionCallingFunctionWithParameters() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int add(int a, int b) {
+            return a + b;
+          }
+          
+          int main() {
+            int c = add(add(5, 2) * add(2, add(1, 2)), add(7, 7,) / add(1, 1));
+            return c;
+          }
+          """));
+        compiler.experimentalCompile();
+    }
+
     @After
     public void showResults() throws Exception {
         ModuleRepository repository = new ModuleRepository();

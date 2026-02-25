@@ -1,6 +1,8 @@
 package com.github.alantr7.codebots.cbslang.high.parser.ast.expressions;
 
-public class Literal implements Operand {
+import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
+
+public class Literal implements Statement, Operand {
 
     public static final byte INT = 0;
     public static final byte FLOAT = 1;
