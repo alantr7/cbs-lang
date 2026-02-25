@@ -5,6 +5,7 @@ import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Declare;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Ret;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
 
 import java.util.Arrays;
@@ -76,6 +77,7 @@ public class Parser {
     void parseFunction(Type type, String name) throws ParserException {
         ParserHelper.expect(tokens.next(), "(");
         Scope functionScope = context.getCurrentScope().createChild(false);
+        context.scopes.add(functionScope);
 
         Type[] parameterTypes = new Type[8];
         int parameterCount = 0;
@@ -92,7 +94,12 @@ public class Parser {
             String parameterName = tokens.next();
 
             parameterTypes[parameterCount] = parameterType;
-            functionScope.variables.put(parameterName, new Variable(parameterType, false, functionScope.nextVariableOffset++, 1));
+
+            Variable parameterVariable = new Variable(parameterType, false, functionScope.nextVariableOffset++, 1);
+            functionScope.variables.put(parameterName, parameterVariable);
+            functionScope.localVariables.put(parameterName, parameterVariable);
+
+            System.out.println();
 
             if (tokens.peek().equals(",")) {
                 tokens.advance();
@@ -103,6 +110,12 @@ public class Parser {
         }
 
         ParserHelper.expect(tokens.next(), ")");
+
+        FunctionSignature signature = new FunctionSignature(null, name, type, Arrays.copyOf(parameterTypes, parameterCount));
+        ast.signatures.add(signature);
+
+        context.currentFunction = signature;
+
         ParserHelper.expect(tokens.next(), "{");
 
         // todo: parse function body
@@ -122,17 +135,22 @@ public class Parser {
 
         ParserHelper.expect(tokens.next(), "}");
 
-        FunctionSignature signature = new FunctionSignature(null, name, type, Arrays.copyOf(parameterTypes, parameterCount));
-        ast.signatures.add(signature);
-
         Function function = new Function(signature, Arrays.copyOf(body, statementCount));
         ast.functions.put(name, function);
 
         System.out.println("Function parsed!");
+        context.currentFunction = null;
     }
 
     Statement parseStatement() throws ParserException {
         String nextToken = tokens.peek();
+/*
+        switch (nextToken) {
+            case "return":
+                return parseReturn();
+            default:
+                break;
+        }*/
 
         // todo: ifs, else-ifs, loops, etc.
         tokens.advance();
@@ -187,6 +205,13 @@ public class Parser {
             throw new ParserException("Unknown variable '" + name + "'.");
 
         return new Assign(variable, new Operand[0], value);
+    }
+
+    Ret parseReturn() throws ParserException {
+        tokens.advance();
+
+        Operand value = parseExpression();
+        return new Ret(value);
     }
 
     Operand parseExpression() throws ParserException {
