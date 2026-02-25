@@ -144,13 +144,13 @@ public class Parser {
 
     Statement parseStatement() throws ParserException {
         String nextToken = tokens.peek();
-/*
+
         switch (nextToken) {
             case "return":
                 return parseReturn();
             default:
                 break;
-        }*/
+        }
 
         // todo: ifs, else-ifs, loops, etc.
         tokens.advance();

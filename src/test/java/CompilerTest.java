@@ -73,11 +73,8 @@ public class CompilerTest {
     public void testFunctionWithReturn() throws ParserException {
         compiler = new Compiler(Parser.parse("""
           int main(int a) {
-            int a;
-            a = 5+5;
-            
-            int b;
-            int c;
+            return 5;
+            int b = 2;
           }
           """));
         compiler.experimentalCompile();
