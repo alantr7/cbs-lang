@@ -13,6 +13,9 @@ import com.github.alantr7.codebots.cbslang.low.runtime.Program;
 import com.github.alantr7.codebots.cbslang.low.runtime.ProgramExecutor;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Compiler {
 
     public final AST ast;
@@ -30,7 +33,18 @@ public class Compiler {
 
     public void experimentalCompile() {
         compileSignatures();
-        ast.functions.values().forEach(this::compileFunction);
+
+        // compile main first
+        List<Function> functions = new ArrayList<>(ast.functions.values());
+        for (int i = 0; i < functions.size(); i++) {
+            Function function = functions.get(i);
+            if (function.signature.name.equals("main") && function.signature.module == null) {
+                functions.set(i, functions.get(0));
+                functions.set(0, function);
+                break;
+            }
+        }
+        functions.forEach(this::compileFunction);
     }
 
     public void compileConstant(String type, Object value) {

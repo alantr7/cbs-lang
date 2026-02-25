@@ -365,12 +365,22 @@ public class Parser {
 
     Operand parseVariableAccessOrCall() throws ParserException {
         String variableName = tokens.next();
-        Variable variable = context.getCurrentScope().variables.get(variableName);
 
-        if (variable == null)
-            throw new ParserException("Unknown member '" + variableName + "'.");
+        if (tokens.peek().equals("(")) {
+            tokens.advance();
+            ParserHelper.expect(tokens.next(), ")");
 
-        return new Access(variable, new Operand[0]);
+            Function function = ast.functions.get(variableName);
+            if (function != null)
+                return new Call(function.signature, new Operand[0][0]);
+        }
+        else {
+            Variable variable = context.getCurrentScope().variables.get(variableName);
+            if (variable != null)
+                return new Access(variable, new Operand[0]);
+        }
+
+        throw new ParserException("Unknown member '" + variableName + "'.");
     }
 
     Operand parseOperator(String raw) {

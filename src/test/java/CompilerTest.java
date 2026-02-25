@@ -95,6 +95,24 @@ public class CompilerTest {
         compiler.experimentalCompile();
     }
 
+    @Test
+    public void testFunctionWithExpressionCallingParameterlessFunction() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int get_num2() {
+            return 5;
+          }
+          
+          int get_num() {
+            return get_num2() * 3;
+          }
+          
+          int main() {
+            return get_num() * 2;
+          }
+          """));
+        compiler.experimentalCompile();
+    }
+
     @After
     public void showResults() throws Exception {
         ModuleRepository repository = new ModuleRepository();
