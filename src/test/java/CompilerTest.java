@@ -128,6 +128,19 @@ public class CompilerTest {
         compiler.experimentalCompile();
     }
 
+    @Test
+    public void testFunctionWithLogicalExpressions() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int calc() {
+            return 10 * (2 + (7 - 3) * 2 - 7);
+          }
+          int main() {
+            return (0 && calc()) || calc();
+          }
+          """));
+        compiler.experimentalCompile();
+    }
+
     @After
     public void showResults() throws Exception {
         ModuleRepository repository = new ModuleRepository();

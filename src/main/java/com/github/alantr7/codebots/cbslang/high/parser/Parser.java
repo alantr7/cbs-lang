@@ -355,9 +355,15 @@ public class Parser {
                 i--;
 
                 postfix.remove(i);
-                postfix.add(i, new Arithmetic(new Operand[]{
-                  prev1, prev2, operator
-                }));
+                if (operator == Operator.AND || operator == Operator.OR) {
+                    postfix.add(i, new Logical(new Operand[]{
+                      prev1, operator, prev2
+                    }));
+                } else {
+                    postfix.add(i, new Arithmetic(new Operand[]{
+                      prev1, prev2, operator
+                    }));
+                }
             }
         }
 
@@ -410,6 +416,10 @@ public class Parser {
             case "-" -> Operator.SUB;
             case "*" -> Operator.MUL;
             case "/" -> Operator.DIV;
+
+            case "&&" -> Operator.AND;
+            case "||" -> Operator.OR;
+
             default -> null;
         };
     }

@@ -249,6 +249,8 @@ public class Compiler {
                 case ProgramExecutor.SUB -> "sub";
                 case ProgramExecutor.MUL -> "mul";
                 case ProgramExecutor.DIV -> "div";
+
+
                 default -> null;
             };
             builder.append(operatorCommand).append(" [esp-2], [esp-1]").append("\n");
