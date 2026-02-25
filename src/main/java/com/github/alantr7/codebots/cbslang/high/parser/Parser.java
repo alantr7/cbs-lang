@@ -236,7 +236,20 @@ public class Parser {
         Statement[] body = parseBody();
 
         ParserHelper.expect(tokens.next(), "}");
-        return new If(condition, body, null);
+
+        if (!tokens.peek().equals("else")) {
+            return new If(condition, body, null);
+        }
+
+        tokens.advance();
+        if (tokens.peek().equals("if")) {
+            return new If(condition, body, parseIf());
+        } else {
+            ParserHelper.expect(tokens.next(), "{");
+            Statement[] elseBody = parseBody();
+            ParserHelper.expect(tokens.next(), "}");
+            return new If(condition, body, new If(null, elseBody, null));
+        }
     }
 
     Ret parseReturn() throws ParserException {

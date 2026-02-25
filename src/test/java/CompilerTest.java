@@ -166,6 +166,23 @@ public class CompilerTest {
         compiler.experimentalCompile();
     }
 
+    @Test
+    public void testFunctionWithIfElseIf() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int main() {
+            int a = 3;
+            if (a > 5) {
+              return 48;
+            } else if (a > 3) {
+              return 32;
+            } else {
+              return a;
+            }
+          }
+          """));
+        compiler.experimentalCompile();
+    }
+
     @After
     public void showResults() throws Exception {
         ModuleRepository repository = new ModuleRepository();
