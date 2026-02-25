@@ -80,6 +80,7 @@ public class Parser {
         context.scopes.add(functionScope);
 
         Type[] parameterTypes = new Type[8];
+        Variable[] parameterVariables = new Variable[8];
         int parameterCount = 0;
         for (; parameterCount < parameterTypes.length; parameterCount++) {
             String rawParameterType = tokens.peek();
@@ -92,14 +93,12 @@ public class Parser {
                 throw new ParserException("Unexpected token '" + rawParameterType + "'.");
 
             String parameterName = tokens.next();
-
-            parameterTypes[parameterCount] = parameterType;
-
-            Variable parameterVariable = new Variable(parameterType, false, functionScope.nextVariableOffset++, 1);
+            Variable parameterVariable = new Variable(parameterType, false, 0, 1);
             functionScope.variables.put(parameterName, parameterVariable);
             functionScope.localVariables.put(parameterName, parameterVariable);
 
-            System.out.println();
+            parameterTypes[parameterCount] = parameterType;
+            parameterVariables[parameterCount] = parameterVariable;
 
             if (tokens.peek().equals(",")) {
                 tokens.advance();
@@ -107,6 +106,12 @@ public class Parser {
             }
 
             break;
+        }
+
+        // set parameter offsets
+        // todo: test this
+        for (int i = 0; i < parameterCount; i++) {
+            parameterVariables[i].offset = i - parameterCount;
         }
 
         ParserHelper.expect(tokens.next(), ")");
@@ -191,7 +196,7 @@ public class Parser {
             throw new ParserException("Variable with name '" + name + "' already exists in this scope.");
         }
 
-        Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset, 1);
+        Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset++, 1);
         context.getCurrentScope().variables.put(name, variable);
         context.getCurrentScope().localVariables.put(name, variable);
         return new Declare(type, initialValue, new int[] { 1 });
@@ -317,13 +322,13 @@ public class Parser {
 //                } else {
                     tokens.rollback();
 
-                    // todo
-//                    var memberAccess = nextMemberAccessOrArrayOrCall();
-//                    if (memberAccess == null) {
-//                        break;
-//                    } else {
-//                        postfix.add(memberAccess);
-//                    }
+                    // todo: function calls or array access
+                    var memberAccess = parseVariableAccessOrCall();
+                    if (memberAccess == null) {
+                        break;
+                    } else {
+                        postfix.add(memberAccess);
+                    }
 //                }
 
                 expectsOperator = true;
@@ -356,6 +361,16 @@ public class Parser {
         }
 
         return postfix.getFirst();
+    }
+
+    Operand parseVariableAccessOrCall() throws ParserException {
+        String variableName = tokens.next();
+        Variable variable = context.getCurrentScope().variables.get(variableName);
+
+        if (variable == null)
+            throw new ParserException("Unknown member '" + variableName + "'.");
+
+        return new Access(variable, new Operand[0]);
     }
 
     Operand parseOperator(String raw) {

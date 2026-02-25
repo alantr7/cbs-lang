@@ -74,7 +74,22 @@ public class CompilerTest {
         compiler = new Compiler(Parser.parse("""
           int main(int a) {
             return 5;
-            int b = 2;
+            a = 3;
+            int b;
+            b= 2;
+          }
+          """));
+        compiler.experimentalCompile();
+    }
+
+    @Test
+    public void testFunctionWithExpressionAccessingAVariable() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int main() {
+            int a = 5;
+            int b = a;
+            
+            return b * 3;
           }
           """));
         compiler.experimentalCompile();

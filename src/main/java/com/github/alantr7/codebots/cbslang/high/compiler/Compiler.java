@@ -72,6 +72,7 @@ public class Compiler {
             }
         }
 
+        // todo: variable cleanup
         builder.append("\n");
     }
 
