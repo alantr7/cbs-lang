@@ -50,7 +50,7 @@ public class CompilerTest {
     public void testFunctionWithSimpleExpression() throws ParserException {
         compiler = new Compiler(Parser.parse("""
           int add(int a, int b) {
-            2+(5+5)*2
+            2+(5+5)*2;
           }
           """));
         compiler.experimentalCompile();

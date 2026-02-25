@@ -165,7 +165,7 @@ public class Parser {
         return null;
     }
 
-    Operand parseExpression() {
+    Operand parseExpression() throws ParserException {
         int j = 0;
         var stack = new Stack<String>();
 
@@ -305,6 +305,9 @@ public class Parser {
                 }));
             }
         }
+
+        ParserHelper.expect(tokens.next(), ";");
+        tokens.advance();
 
         return postfix.getFirst();
     }
