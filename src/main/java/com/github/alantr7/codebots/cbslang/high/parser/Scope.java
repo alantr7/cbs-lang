@@ -9,11 +9,16 @@ public class Scope {
 
     Map<String, Variable> variables = new HashMap<>();
 
+    Map<String, Variable> localVariables = new HashMap<>();
+
     int nextVariableOffset;
 
-    public Scope createChild() {
+    public Scope createChild(boolean copyLocals) {
         Scope child = new Scope();
         child.variables.putAll(variables);
+
+        if (copyLocals)
+            child.localVariables.putAll(localVariables);
 
         return child;
     }

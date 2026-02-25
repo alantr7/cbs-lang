@@ -75,7 +75,7 @@ public class Parser {
 
     void parseFunction(Type type, String name) throws ParserException {
         ParserHelper.expect(tokens.next(), "(");
-        Scope functionScope = context.getCurrentScope().createChild();
+        Scope functionScope = context.getCurrentScope().createChild(false);
 
         Type[] parameterTypes = new Type[8];
         int parameterCount = 0;
@@ -157,26 +157,26 @@ public class Parser {
     }
 
     Declare parseVariableDeclare(Type type, String name) throws ParserException {
+        Operand initialValue;
         // no assignment
         if (tokens.peek().equals(";")) {
             // todo: arrays
-
-            Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset, 1);
-            context.getCurrentScope().variables.put(name, variable);
-            return new Declare(type, null, new int[] { 1 });
+            initialValue = null;
         }
-
-        // assignment
-        if (tokens.peek().equals("=")) {
+        else if (tokens.peek().equals("=")) {
             tokens.advance();
+            initialValue = parseExpression();
+        }
+        else return null;
 
-            Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset, 1);
-            context.getCurrentScope().variables.put(name, variable);
-
-            return new Declare(type, parseExpression(), new int[] { 1 });
+        if (context.getCurrentScope().localVariables.containsKey(name)) {
+            throw new ParserException("Variable with name '" + name + "' already exists in this scope.");
         }
 
-        return null;
+        Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset, 1);
+        context.getCurrentScope().variables.put(name, variable);
+        context.getCurrentScope().localVariables.put(name, variable);
+        return new Declare(type, initialValue, new int[] { 1 });
     }
 
     Assign parseVariableAssign(String name) throws ParserException {
