@@ -183,6 +183,23 @@ public class CompilerTest {
         compiler.experimentalCompile();
     }
 
+    @Test
+    public void testFactorial() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int fact(int num) {
+            if (num <= 1) {
+              return 1;
+            }
+            return num * fact(num - 1);
+          }
+          
+          int main() {
+            return fact(5);
+          }
+          """));
+        compiler.experimentalCompile();
+    }
+
     @After
     public void showResults() throws Exception {
         ModuleRepository repository = new ModuleRepository();

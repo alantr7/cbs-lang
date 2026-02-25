@@ -418,7 +418,7 @@ public class Parser {
         if (tokens.peek().equals("(")) {
             tokens.advance();
 
-            Function function = ast.functions.get(variableName);
+            FunctionSignature function = ast.signatures.stream().filter(s -> s.name.equals(variableName)).findFirst().orElse(null);
             if (function == null)
                 throw new ParserException("Unknown member '" + variableName + "'.");
 
@@ -441,7 +441,7 @@ public class Parser {
                 ParserHelper.expect(tokens.next(), ",");
             }
 
-            return new Call(function.signature, Arrays.copyOf(arguments, argumentCount));
+            return new Call(function, Arrays.copyOf(arguments, argumentCount));
         }
         else {
             Variable variable = context.getCurrentScope().variables.get(variableName);
