@@ -9,6 +9,8 @@ public class Scope {
 
     Map<String, Variable> variables = new HashMap<>();
 
+    int nextVariableOffset;
+
     public Scope createChild() {
         Scope child = new Scope();
         child.variables.putAll(variables);

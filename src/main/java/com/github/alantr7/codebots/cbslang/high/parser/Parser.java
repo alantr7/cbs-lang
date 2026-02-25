@@ -2,10 +2,7 @@ package com.github.alantr7.codebots.cbslang.high.parser;
 
 import com.github.alantr7.codebots.cbslang.exceptions.ParserException;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.Arithmetic;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.Literal;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.Operand;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.Operator;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Declare;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
@@ -30,7 +27,6 @@ public class Parser {
     AST parse() throws ParserException {
         while (!tokens.isEmpty()) {
             String nextToken = tokens.peek();
-            System.out.println("Token: " + nextToken);
 
             // allowed in root context:
             // - imports
@@ -81,8 +77,6 @@ public class Parser {
         ParserHelper.expect(tokens.next(), "(");
         Scope functionScope = context.getCurrentScope().createChild();
 
-        int variableOffset = 0;
-
         Type[] parameterTypes = new Type[8];
         int parameterCount = 0;
         for (; parameterCount < parameterTypes.length; parameterCount++) {
@@ -98,7 +92,7 @@ public class Parser {
             String parameterName = tokens.next();
 
             parameterTypes[parameterCount] = parameterType;
-            functionScope.variables.put(parameterName, new Variable(parameterType, false, variableOffset++, 1));
+            functionScope.variables.put(parameterName, new Variable(parameterType, false, functionScope.nextVariableOffset++, 1));
 
             if (tokens.peek().equals(",")) {
                 tokens.advance();
@@ -122,6 +116,7 @@ public class Parser {
             if (statement == null)
                 break;
 
+            ParserHelper.expect(tokens.next(), ";");
             body[statementCount] = statement;
         }
 
@@ -142,9 +137,17 @@ public class Parser {
         // todo: ifs, else-ifs, loops, etc.
         tokens.advance();
 
+        // variable declare
         Type parameterType = parseType(nextToken);
         if (parameterType != null) {
             return parseVariableDeclare(parameterType, tokens.next());
+        }
+
+        // variable assign
+        if (tokens.peek().equals("=")) {
+            tokens.advance();
+
+            return parseVariableAssign(nextToken);
         }
 
         tokens.rollback();
@@ -153,16 +156,37 @@ public class Parser {
         return (Arithmetic) parseExpression();
     }
 
-    Declare parseVariableDeclare(Type type, String name) {
+    Declare parseVariableDeclare(Type type, String name) throws ParserException {
+        // no assignment
         if (tokens.peek().equals(";")) {
-            tokens.advance();
-            // no assignment
             // todo: arrays
+
+            Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset, 1);
+            context.getCurrentScope().variables.put(name, variable);
             return new Declare(type, null, new int[] { 1 });
         }
 
-        // todo: assignment
+        // assignment
+        if (tokens.peek().equals("=")) {
+            tokens.advance();
+
+            Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset, 1);
+            context.getCurrentScope().variables.put(name, variable);
+
+            return new Declare(type, parseExpression(), new int[] { 1 });
+        }
+
         return null;
+    }
+
+    Assign parseVariableAssign(String name) throws ParserException {
+        Operand value = parseExpression();
+        Variable variable = context.getCurrentScope().variables.get(name);
+
+        if (variable == null)
+            throw new ParserException("Unknown variable '" + name + "'.");
+
+        return new Assign(variable, new Operand[0], value);
     }
 
     Operand parseExpression() throws ParserException {
@@ -305,9 +329,6 @@ public class Parser {
                 }));
             }
         }
-
-        ParserHelper.expect(tokens.next(), ";");
-        tokens.advance();
 
         return postfix.getFirst();
     }
