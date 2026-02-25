@@ -18,6 +18,8 @@ import java.util.List;
 
 public class Compiler {
 
+    private final CompilerContext context = new CompilerContext();
+
     public final AST ast;
 
     private final StringBuilder builder = new StringBuilder();
@@ -65,6 +67,8 @@ public class Compiler {
         builder.append("; Function: ").append(function.signature.name).append("(").append(")").append("\n");
         builder.append(function.signature.name).append(":\n");
 
+        context.currentFunction = function.signature;
+
         if (!function.signature.name.equals("main")) {
             builder.append("push ebp\n");
             builder.append("mov ebp, esp\n");
@@ -72,21 +76,13 @@ public class Compiler {
         }
 
         for (Statement stmt : function.body) {
-            if (stmt instanceof Ret ret) {
-                compileExpression(ret.value);
-                builder.append("pop rax\n");
-
-                if (function.signature.name.equals("main")) {
-                    builder.append("exit\n");
-                } else {
-                    builder.append("ret\n");
-                }
-            } else {
-                compileStatement(stmt);
-            }
+            compileStatement(stmt);
         }
 
         // todo: variable cleanup
+
+        context.currentFunction = null;
+
         builder.append("\n");
     }
 
@@ -232,6 +228,17 @@ public class Compiler {
         else if (statement instanceof Operand expression) {
             compileExpression(expression);
             append("pop");
+        }
+
+        else if (statement instanceof Ret ret) {
+            compileExpression(ret.value);
+            builder.append("pop rax\n");
+
+            if (context.currentFunction.name.equals("main")) {
+                builder.append("exit\n");
+            } else {
+                builder.append("ret\n");
+            }
         }
     }
 

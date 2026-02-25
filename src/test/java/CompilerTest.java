@@ -152,6 +152,20 @@ public class CompilerTest {
         compiler.experimentalCompile();
     }
 
+    @Test
+    public void testFunctionWithIf() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int main() {
+            int a = 3;
+            if (a < 5) {
+              return 48;
+            }
+            return 56;
+          }
+          """));
+        compiler.experimentalCompile();
+    }
+
     @After
     public void showResults() throws Exception {
         ModuleRepository repository = new ModuleRepository();

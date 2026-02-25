@@ -5,6 +5,7 @@ import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Declare;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.If;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Ret;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
 
@@ -125,6 +126,18 @@ public class Parser {
         ParserHelper.expect(tokens.next(), "{");
 
         // todo: parse function body
+        Statement[] body = parseBody();
+
+        ParserHelper.expect(tokens.next(), "}");
+
+        Function function = new Function(signature, body);
+        ast.functions.put(name, function);
+
+        System.out.println("Function parsed!");
+        context.currentFunction = null;
+    }
+
+    Statement[] parseBody() throws ParserException {
         Statement[] body = new Statement[128];
         int statementCount = 0;
         for (; statementCount < body.length; statementCount++) {
@@ -135,23 +148,21 @@ public class Parser {
             if (statement == null)
                 break;
 
-            ParserHelper.expect(tokens.next(), ";");
+            if (!(statement instanceof If))
+                ParserHelper.expect(tokens.next(), ";");
+
             body[statementCount] = statement;
         }
 
-        ParserHelper.expect(tokens.next(), "}");
-
-        Function function = new Function(signature, Arrays.copyOf(body, statementCount));
-        ast.functions.put(name, function);
-
-        System.out.println("Function parsed!");
-        context.currentFunction = null;
+        return Arrays.copyOf(body, statementCount);
     }
 
     Statement parseStatement() throws ParserException {
         String nextToken = tokens.peek();
 
         switch (nextToken) {
+            case "if":
+                return parseIf();
             case "return":
                 return parseReturn();
             default:
@@ -211,6 +222,21 @@ public class Parser {
             throw new ParserException("Unknown variable '" + name + "'.");
 
         return new Assign(variable, new Operand[0], value);
+    }
+
+    If parseIf() throws ParserException {
+        tokens.advance();
+        ParserHelper.expect(tokens.next(), "(");
+
+        Operand condition = parseExpression();
+
+        ParserHelper.expect(tokens.next(), ")");
+        ParserHelper.expect(tokens.next(), "{");
+
+        Statement[] body = parseBody();
+
+        ParserHelper.expect(tokens.next(), "}");
+        return new If(condition, body, null);
     }
 
     Ret parseReturn() throws ParserException {
