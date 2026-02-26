@@ -239,8 +239,12 @@ public class Parser {
             tokens.advance();
             initialValue = parseExpression();
 
-            if (type != initialValue.getResultType())
-                throw new ParserException("Type mismatch: can not convert '" + initialValue.getResultType() + "' to '" + type + "'.");
+            if (type != initialValue.getResultType()) {
+                if (type == Primitive.FLOAT && initialValue.getResultType() == Primitive.INT)
+                    initialValue = new Cast(initialValue, Primitive.FLOAT);
+                else
+                    throw new ParserException("Type mismatch: can not convert '" + initialValue.getResultType() + "' to '" + type + "'.");
+            }
         }
         else return null;
 

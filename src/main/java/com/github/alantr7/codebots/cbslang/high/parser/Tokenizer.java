@@ -72,10 +72,6 @@ public class Tokenizer {
                     token = tokens.removeLast() + character;
                 }
 
-                else if (character == ')' && i > 3 && (tokens.get(tokens.size() - 1).equals("int") || tokens.get(tokens.size() - 1).equals("float")) && tokens.get(tokens.size() - 2).equals("(")) {
-                    token = "(" + tokens.peekLast() + ")";
-                }
-
                 else if (character == ')' && "(".equals(tokens.peekLast())) {
                     String cast = line.substring(start, i);
                     if (cast.equals("int") || cast.equals("float")) {
