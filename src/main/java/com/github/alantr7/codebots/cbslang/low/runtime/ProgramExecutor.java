@@ -37,7 +37,7 @@ public class ProgramExecutor {
             value = Float.parseFloat(instruction[2]);
 
         else if (dataType.equals(DataType.STRING))
-            value = instruction[2];
+            value = instruction[2].substring(1, instruction[2].length() - 1);
 
         else value = null;
 

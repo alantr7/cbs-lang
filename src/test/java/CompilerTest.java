@@ -363,13 +363,13 @@ public class CompilerTest {
     }
 
     @Test
-    public void testTypeChecks() throws ParserException {
+    public void testStrings() throws ParserException {
         compiler = new Compiler(Parser.parse(repository, """
-          string get_greeting() {
-            return "Merhaba!";
+          string get_name() {
+            return "Alan";
           }
           string main() {
-            string greet = 5 + get_greeting();
+            string greet = "Hello " + get_name() + "!";
             return greet;
           }
           """));
