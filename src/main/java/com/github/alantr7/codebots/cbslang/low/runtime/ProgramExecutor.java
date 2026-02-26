@@ -215,6 +215,18 @@ public class ProgramExecutor {
         destination.setValue((DataType<Object>) resultType, resultCasted);
     }
 
+    void handleCFLTI(String[] instruction) {
+        assert instruction[0].equals("cflti");
+        Data top = program.state.locate((int) program.state.REGISTER_ESP.getValue() - 1);
+        top.setValue(DataType.INT, (int) (float) top.getValue());
+    }
+
+    void handleCIFLT(String[] instruction) {
+        assert instruction[0].equals("ciflt");
+        Data top = program.state.locate((int) program.state.REGISTER_ESP.getValue() - 1);
+        top.setValue(DataType.FLOAT, (float) (int) top.getValue());
+    }
+
     void handleCAT(String[] instruction) {
         assert instruction[0].equals("cat");
 

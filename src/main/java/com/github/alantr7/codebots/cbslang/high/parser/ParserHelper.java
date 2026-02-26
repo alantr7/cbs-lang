@@ -30,8 +30,16 @@ public class ParserHelper {
       "++",
       "--"
     );
+    private static final Set<String> CAST = Set.of(
+      "(int)",
+      "(float)"
+    );
     public static boolean isUnaryOperator(String input) {
-        return UNARY.contains(input);
+        return UNARY.contains(input) || CAST.contains(input);
+    }
+
+    public static boolean isCastOperator(String input) {
+        return CAST.contains(input);
     }
 
     public static boolean isNumber(String input) {

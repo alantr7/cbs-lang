@@ -221,8 +221,11 @@ public class Parser {
 
         tokens.rollback();
 
-        // todo: other types of expressions
-        return (Statement) parseExpression();
+        Operand expression = parseExpression();
+        if (expression instanceof Statement stmt)
+            return stmt;
+
+        throw new ParserException("Can not use " + expression + " as a statement.");
     }
 
     Declare parseVariableDeclare(Type type, String name) throws ParserException {
@@ -390,6 +393,11 @@ public class Parser {
 
                 expectsOperator = true;
             }
+
+            else if (ParserHelper.isCastOperator(next)) {
+                postfix.add(new Cast(parseExpression(), next.equals("(int)") ? Primitive.INT : Primitive.FLOAT));
+            }
+
             // todo: should i do null? probs not
 //            else if (ParserHelper.isNull(next)) {
 //                postfix.add(new LiteralExpression("null", LiteralExpression.NULL));

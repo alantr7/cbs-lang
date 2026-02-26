@@ -375,6 +375,18 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testTypeCheck() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          int main() {
+            int a = 3;
+            float b = (float) a;
+            
+            return (int) (float) (int) (float) b;
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();

@@ -87,6 +87,9 @@ public class Program {
                 case "div" -> executor.handleMATH(instruction, ProgramExecutor.DIV);
                 case "mod" -> executor.handleMATH(instruction, ProgramExecutor.MOD);
 
+                case "cflti" -> executor.handleCFLTI(instruction);
+                case "ciflt" -> executor.handleCIFLT(instruction);
+
                 case "dump" -> state.dump();
             }
         } catch (Exception e) {

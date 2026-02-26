@@ -414,7 +414,9 @@ public class Compiler {
             builder.append("\n");
 
             // Both results are now in stack
-        } else if (operand instanceof Unary unary) {
+        }
+
+        else if (operand instanceof Unary unary) {
             builder.append("; Unary\n");
             // if prefix
             if (unary.operation == Unary.PREFIX_INCREMENT || unary.operation == Unary.PREFIX_DECREMENT) {
@@ -435,6 +437,18 @@ public class Compiler {
                 })));
                 builder.append("pop\n");
             }
+        }
+
+        else if (operand instanceof Cast cast) {
+            builder.append("; Cast\n");
+            compileExpression(cast.operand);
+            if (cast.operand.getResultType() == Primitive.FLOAT && cast.type == Primitive.INT) {
+                builder.append("cflti\n");
+            }
+            else if (cast.operand.getResultType() == Primitive.INT && cast.type == Primitive.FLOAT) {
+                builder.append("ciflt\n");
+            }
+            // todo: maybe throw an error, it shouldn't be anything else cause parser took care of it
         }
 
         else if (operand instanceof Concat concat) {

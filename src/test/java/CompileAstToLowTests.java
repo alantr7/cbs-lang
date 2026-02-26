@@ -322,6 +322,21 @@ public class CompileAstToLowTests {
         ));
     }
 
+    @Test
+    public void testCasting() {
+        Float fl1 = -5.0f;
+        compiler.ast.constants.add(new TokenQueue.Constant(Primitive.FLOAT, fl1));
+        compiler.compileConstant("flt", fl1);
+
+        Variable variable = new Variable(Primitive.INT, true, 0, 1);
+        compiler.compileVariableDeclare(variable);
+        compiler.compileExpression(new Assign(
+          variable,
+          new Operand[0],
+          new Cast(new Cast(new Literal(Literal.FLOAT, fl1), Primitive.INT), Primitive.FLOAT)
+        ));
+    }
+
     @After
     public void dump() throws Exception {
         ModuleRepository repository = new ModuleRepository();
