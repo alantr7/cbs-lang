@@ -137,7 +137,7 @@ public class Parser {
         // set parameter offsets
         // todo: test this
         for (int i = 0; i < parameterCount; i++) {
-            parameterVariables[i].offset = i - parameterCount;
+            parameterVariables[i].offset = i - parameterCount - 1;
         }
 
         ParserHelper.expect(tokens.next(), ")");

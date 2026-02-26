@@ -62,7 +62,7 @@ public class ProgramState {
         int i = 0;
         for (; i < MEMORY.length; i++) {
             if (MEMORY[i] == null)
-                break;
+                continue;
 
             System.out.printf(" %3d\t%10s\t%s\n", i, MEMORY[i].getDataType().getTypeName(), MEMORY[i].getValue());
         }

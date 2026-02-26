@@ -13,7 +13,7 @@ public class Scope {
 
     Map<String, Variable> localVariables = new HashMap<>();
 
-    int nextVariableOffset;
+    int nextVariableOffset = 1;
 
     public Scope createChild(boolean copyLocals) {
         Scope child = new Scope();

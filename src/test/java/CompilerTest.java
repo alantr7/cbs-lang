@@ -63,11 +63,16 @@ public class CompilerTest {
     @Test
     public void testFunctionWithVariableAssign() throws ParserException {
         compiler = new Compiler(Parser.parse("""
-          int add(int a, int b) {
+          int main() {
+            int a;
+            int b;
             int c;
-            c = 2+(5+5)*2;
+            int d;
+            a = 5;
+            b = 3;
+            c = 2;
             
-            int d = 5+5;
+            return a + b * c;
           }
           """));
     }
@@ -121,7 +126,7 @@ public class CompilerTest {
           }
           
           int main() {
-            int c = add(add(5, 2) * add(2, add(1, 2)), add(7, 7,) / add(1, 1));
+            int c = add(add(5, 2) * add(2, add(1, 2)), add(7, 7) / add(1, 1));
             return c;
           }
           """));
@@ -306,15 +311,66 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testEbpIncorrections1() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          int get_num() {
+            return 4;
+          }
+          
+          int main() {
+            int a = get_num();
+            int c = 2;
+            return (a * get_num()) / c;
+          }
+          """));
+    }
+
+    @Test
+    public void testEbpIncorrections2() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          int square(int num) {
+            return num * num;
+          }
+          
+          int main() {
+            int a = square(25);
+            return a;
+          }
+          """));
+    }
+
+    @Test
+    public void testEbpIncorrections3() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          import system;
+          int inner(int x) {
+              int y = x + 1;
+              return y;
+          }
+          
+          int outer(int a) {
+              int local = a * 2;
+              inner(a);
+          
+              return local;
+          }
+          
+          int main() {
+              return outer(5);
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();
 
         String[][] tokenized = Tokenizer.tokenize(compiler.getOutput());
         Program program = new Program(tokenized, repository);
-        program.execute();
-
         System.out.println(compiler.getOutput());
+
+        program.execute();
         program.getState().dump();
 
         Files.writeString(new File("./output.txt").toPath(), compiler.getOutput());

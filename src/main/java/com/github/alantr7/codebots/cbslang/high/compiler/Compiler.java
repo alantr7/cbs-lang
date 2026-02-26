@@ -77,10 +77,12 @@ public class Compiler {
         if (!function.signature.name.equals("main")) {
             builder.append("push ebp\n");
             builder.append("mov ebp, esp\n");
-            builder.append("sub ebp, 2\n");
+            builder.append("sub ebp, 1\n");
         } else {
             // without this it breaks when using constants
+            builder.append("push ebp\n");
             builder.append("mov ebp, esp\n");
+            builder.append("sub ebp, 1\n");
         }
 
         for (Statement stmt : function.body) {
@@ -381,7 +383,7 @@ public class Compiler {
 
             builder.append("call ").append(call.function.module != null ? ("." + ast.getFunctionOffset(call.function)) : call.function.name).append("\n");
             if (call.function.module != null) {
-                builder.append("sub esp, ").append(2 + call.arguments.length).append("\n");
+                builder.append("sub esp, ").append(1 + call.arguments.length).append("\n");
             } else {
                 builder.append("sub esp, ").append(call.arguments.length).append("\n");
             }
