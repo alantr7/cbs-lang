@@ -97,6 +97,7 @@ public class Parser {
             Variable parameterVariable = new Variable(parameterType, false, 0, 1);
             functionScope.variables.put(parameterName, parameterVariable);
             functionScope.localVariables.put(parameterName, parameterVariable);
+            functionScope.parameterVariables.put(parameterName, parameterVariable);
 
             parameterTypes[parameterCount] = parameterType;
             parameterVariables[parameterCount] = parameterVariable;
@@ -256,7 +257,8 @@ public class Parser {
         tokens.advance();
 
         Operand value = parseExpression();
-        return new Ret(value);
+        System.out.println("return should clean up " + context.getCurrentScope().localVariables.size());
+        return new Ret(value, context.getCurrentScope().localVariables.size() - context.getCurrentScope().parameterVariables.size());
     }
 
     Operand parseExpression() throws ParserException {

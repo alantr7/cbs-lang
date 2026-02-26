@@ -104,7 +104,7 @@ public class CompileAstToLowTests {
             new Access(new Variable(Primitive.INT, false, -2, 1), new Operand[0]),
             new Access(new Variable(Primitive.INT, false, -1, 1), new Operand[0]),
             Operator.ADD,
-          }))
+          }), 0)
         });
 
         FunctionSignature mainSignature = new FunctionSignature(null, "main", Primitive.INT, new Type[0]);
@@ -121,7 +121,7 @@ public class CompileAstToLowTests {
               }),
             }
           }),
-          new Ret(new Literal(Literal.INT, 0)),
+          new Ret(new Literal(Literal.INT, 0), 0),
         });
 
         compiler.compileFunction(main);
@@ -168,7 +168,7 @@ public class CompileAstToLowTests {
         compiler.append("exit\n");
 
         Function return3 = new Function(return3sig, new Statement[]{
-          new Ret(new Literal(Literal.INT, 2))
+          new Ret(new Literal(Literal.INT, 2), 0)
         });
 
         compiler.compileFunction(return3);

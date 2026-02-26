@@ -172,6 +172,8 @@ public class ProgramExecutor {
         assert instruction[0].equals("ret");
 
         // where to go back?
+        handleMATH(new String[] { "add", "ebp", "2" }, ProgramExecutor.ADD);
+        handleMOV(new String[] { "mov", "esp", "ebp" });
         handlePOP(new String[] { "pop", "ebp" });
         handlePOP(new String[] { "pop", "eip" });
     }

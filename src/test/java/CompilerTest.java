@@ -200,6 +200,24 @@ public class CompilerTest {
         compiler.experimentalCompile();
     }
 
+    @Test
+    public void testVariableCleanup() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int test(int e) {
+            int a = 3;
+            int b = 5;
+            int c = 8;
+            int d = 11;
+            
+            return e;
+          }
+          int main() {
+            return test(test(test(12)));
+          }
+          """));
+        compiler.experimentalCompile();
+    }
+
     @After
     public void showResults() throws Exception {
         ModuleRepository repository = new ModuleRepository();

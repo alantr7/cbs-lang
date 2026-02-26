@@ -9,6 +9,8 @@ public class Scope {
 
     Map<String, Variable> variables = new HashMap<>();
 
+    Map<String, Variable> parameterVariables = new HashMap<>();
+
     Map<String, Variable> localVariables = new HashMap<>();
 
     int nextVariableOffset;
