@@ -131,7 +131,6 @@ public class Parser {
         Function function = new Function(signature, body);
         ast.functions.put(name, function);
 
-        System.out.println("Function parsed!");
         context.currentFunction = null;
     }
 
@@ -146,7 +145,7 @@ public class Parser {
             if (statement == null)
                 break;
 
-            if (!(statement instanceof If))
+            if (!(statement instanceof If) || (statement instanceof While wh && wh.isDoWhile))
                 ParserHelper.expect(tokens.next(), ";");
 
             body[statementCount] = statement;
@@ -161,6 +160,8 @@ public class Parser {
         switch (nextToken) {
             case "if":
                 return parseIf();
+            case "do":
+                return parseDoWhile();
             case "while":
                 return parseWhile();
             case "return":
@@ -266,11 +267,23 @@ public class Parser {
         return new While(condition, body);
     }
 
+    While parseDoWhile() throws ParserException {
+        tokens.advance();
+        ParserHelper.expect(tokens.next(), "{");
+        Statement[] body = parseBody();
+        ParserHelper.expect(tokens.next(), "}");
+        ParserHelper.expect(tokens.next(), "while");
+        ParserHelper.expect(tokens.next(), "(");
+        Operand condition = parseExpression();
+        ParserHelper.expect(tokens.next(), ")");
+
+        return new While(condition, body, true);
+    }
+
     Ret parseReturn() throws ParserException {
         tokens.advance();
 
         Operand value = parseExpression();
-        System.out.println("return should clean up " + context.getCurrentScope().localVariables.size());
         return new Ret(value, context.getCurrentScope().localVariables.size() - context.getCurrentScope().parameterVariables.size());
     }
 

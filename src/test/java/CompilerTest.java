@@ -220,6 +220,19 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testDoWhileLoop() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int main() {
+            int i = 0;
+            do {
+              i = i + 1;
+            } while (i < 5);
+            return i;
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();
