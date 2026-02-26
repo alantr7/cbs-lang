@@ -404,6 +404,27 @@ public class Compiler {
             builder.append("\n");
 
             // Both results are now in stack
+        } else if (operand instanceof Unary unary) {
+            builder.append("; Unary\n");
+            // if prefix
+            if (unary.operation == Unary.PREFIX_INCREMENT || unary.operation == Unary.PREFIX_DECREMENT) {
+                compileExpression(new Assign(unary.operand.variable, unary.operand.indices, new Arithmetic(new Operand[]{
+                  unary.operand,
+                  new Literal(Literal.INT, unary.operation == Unary.PREFIX_INCREMENT ? 1 : -1),
+                  Operator.ADD
+                })));
+            }
+            else {
+                builder.append("; Push variable onto stack\n");
+                compileExpression(unary.operand); // pushes variable value onto the stack
+                builder.append("; Update variable\n");
+                compileExpression(new Assign(unary.operand.variable, unary.operand.indices, new Arithmetic(new Operand[]{
+                  unary.operand,
+                  new Literal(Literal.INT, unary.operation == Unary.POSTFIX_INCREMENT ? 1 : -1),
+                  Operator.ADD
+                })));
+                builder.append("pop\n");
+            }
         }
     }
 

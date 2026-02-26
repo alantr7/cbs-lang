@@ -23,6 +23,11 @@ public class Operator implements Operand {
 
     public static final Operator ASSIGN = new Operator(Assign.SET);
 
+    public static final Operator PREFIX_INCREMENT = new Operator(Unary.PREFIX_INCREMENT);
+    public static final Operator POSTFIX_INCREMENT = new Operator(Unary.POSTFIX_INCREMENT);
+    public static final Operator PREFIX_DECREMENT = new Operator(Unary.PREFIX_DECREMENT);
+    public static final Operator POSTFIX_DECREMENT = new Operator(Unary.POSTFIX_DECREMENT);
+
     private Operator(byte type) {
         this.type = type;
     }

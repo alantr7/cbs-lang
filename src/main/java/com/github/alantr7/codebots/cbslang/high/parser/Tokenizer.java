@@ -63,7 +63,8 @@ public class Tokenizer {
                     }
                 }
 
-                else if ((character == '|' && "|".equals(tokens.peekLast())) || (character == '&' && "&".equals(tokens.peekLast()))) {
+                // todo: improve this ugly stuff
+                else if ((character == '|' && "|".equals(tokens.peekLast())) || (character == '&' && "&".equals(tokens.peekLast())) || (character == '+' && "+".equals(tokens.peekLast())) || (character == '-' && "-".equals(tokens.peekLast()))) {
                     token = tokens.removeLast() + character;
                 }
 
@@ -87,7 +88,7 @@ public class Tokenizer {
 
                 start = i + 1;
 
-                if (character != ' ' && !ParserHelper.isOperator(token))
+                if (character != ' ' && !ParserHelper.isOperator(token) && !ParserHelper.isUnaryOperator(token))
                     tokens.add(String.valueOf(character));
             }
         }

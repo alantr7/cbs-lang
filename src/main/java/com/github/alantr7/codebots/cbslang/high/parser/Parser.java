@@ -477,9 +477,21 @@ public class Parser {
     }
 
     Operand parseVariableAccessOrCall() throws ParserException {
+        byte prefix = 0;
+        byte postfix = 0;
+
+        if (tokens.peek().equals("++")) {
+            tokens.advance();
+            prefix = Unary.PREFIX_INCREMENT;
+        }
+        else if (tokens.peek().equals("--")) {
+            tokens.advance();
+            prefix = Unary.PREFIX_DECREMENT;
+        }
+
         String variableName = tokens.next();
 
-        if (tokens.peek().equals("(")) {
+        if ((prefix == 0) && tokens.peek().equals("(")) {
             tokens.advance();
 
             FunctionSignature function = ast.signatures.stream().filter(s -> s.name.equals(variableName)).findFirst().orElse(null);
@@ -509,8 +521,24 @@ public class Parser {
         }
         else {
             Variable variable = context.getCurrentScope().variables.get(variableName);
-            if (variable != null)
+            if (prefix == 0) {
+                if (tokens.peek().equals("++")) {
+                    // is postfix
+                    tokens.advance();
+                    postfix = Unary.POSTFIX_INCREMENT;
+                }
+                else if (tokens.peek().equals("--")) {
+                    tokens.advance();
+                    postfix = Unary.POSTFIX_DECREMENT;
+                }
+            }
+
+            if (variable != null) {
+                if ((prefix | postfix) != 0) {
+                    return new Unary(new Access(variable, new Operand[0]), (byte) (prefix | postfix));
+                }
                 return new Access(variable, new Operand[0]);
+            }
         }
 
         throw new ParserException("Unknown member '" + variableName + "'.");
@@ -534,7 +562,6 @@ public class Parser {
             case ">=" -> Operator.GREATER_EQUALS;
 
             case "=" -> Operator.ASSIGN;
-
             default -> null;
         };
     }

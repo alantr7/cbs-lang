@@ -26,6 +26,14 @@ public class ParserHelper {
         return OPERATORS.contains(input);
     }
 
+    private static final Set<String> UNARY = Set.of(
+      "++",
+      "--"
+    );
+    public static boolean isUnaryOperator(String input) {
+        return UNARY.contains(input);
+    }
+
     public static boolean isNumber(String input) {
         return input.matches("\\d+");
     }

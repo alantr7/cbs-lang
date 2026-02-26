@@ -238,7 +238,7 @@ public class CompilerTest {
         compiler = new Compiler(Parser.parse("""
           int main() {
             int a = 0;
-            for (int i = 0; i < 10; i = i + 1) {
+            for (int i = 0; i < 10; i++) {
               a = a + 2;
             };
             return a;
@@ -253,6 +253,17 @@ public class CompilerTest {
             int a;
             int b = (a = 3);
             
+            return b;
+          }
+          """));
+    }
+
+    @Test
+    public void testUnaryOperators() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int main() {
+            int a = 1;
+            int b = ++a;
             return b;
           }
           """));
