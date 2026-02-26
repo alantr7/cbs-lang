@@ -155,19 +155,27 @@ public class Parser {
     }
 
     Statement parseStatement() throws ParserException {
+        return parseStatement(false);
+    }
+
+    Statement parseStatement(boolean forInitExpr) throws ParserException {
         String nextToken = tokens.peek();
 
-        switch (nextToken) {
-            case "if":
-                return parseIf();
-            case "do":
-                return parseDoWhile();
-            case "while":
-                return parseWhile();
-            case "return":
-                return parseReturn();
-            default:
-                break;
+        if (!forInitExpr) {
+            switch (nextToken) {
+                case "if":
+                    return parseIf();
+                case "while":
+                    return parseWhile();
+                case "do":
+                    return parseDoWhile();
+                case "for":
+                    return parseFor();
+                case "return":
+                    return parseReturn();
+                default:
+                    break;
+            }
         }
 
         // todo: ifs, else-ifs, loops, etc.
@@ -278,6 +286,28 @@ public class Parser {
         ParserHelper.expect(tokens.next(), ")");
 
         return new While(condition, body, true);
+    }
+
+    For parseFor() throws ParserException {
+        tokens.advance();
+        ParserHelper.expect(tokens.next(), "(");
+
+        // todo: parse ForInitExpr
+        Statement init = tokens.peek().equals(";") ? null : parseStatement(true);
+
+        ParserHelper.expect(tokens.next(), ";");
+
+        Operand condition = parseExpression();
+        ParserHelper.expect(tokens.next(), ";");
+
+        Operand update = parseExpression();
+
+        ParserHelper.expect(tokens.next(), ")");
+        ParserHelper.expect(tokens.next(), "{");
+        Statement[] body = parseBody();
+        ParserHelper.expect(tokens.next(), "}");
+
+        return new For((ForInitExpr) init, condition, update, body);
     }
 
     Ret parseReturn() throws ParserException {

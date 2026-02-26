@@ -233,6 +233,20 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testForLoop() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int main() {
+            int a = 0;
+            for (int i = 0; i < 10; 1) {
+              a = a + 2;
+              i = i + 1;
+            };
+            return a;
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();
