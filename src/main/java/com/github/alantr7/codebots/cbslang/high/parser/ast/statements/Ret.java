@@ -6,11 +6,8 @@ public class Ret implements Statement {
 
     public Operand value;
 
-    public int cleanupCount;
-
-    public Ret(Operand value, int cleanupCount) {
+    public Ret(Operand value) {
         this.value = value;
-        this.cleanupCount = cleanupCount;
     }
 
 }

@@ -9,12 +9,19 @@ public abstract class Type {
 
     private static final Map<DataType<?>, Type> adapters = new HashMap<>();
 
+    private final DataType<?> corresponding;
+
     public Type(DataType<?> corresponding) {
+        this.corresponding = corresponding;
         adapters.put(corresponding, this);
     }
 
     public static Type adapt(DataType<?> corresponding) {
         return adapters.get(corresponding);
+    }
+
+    public String toString() {
+        return corresponding.getTypeName();
     }
 
 }

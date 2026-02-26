@@ -135,7 +135,6 @@ public class Parser {
         }
 
         // set parameter offsets
-        // todo: test this
         for (int i = 0; i < parameterCount; i++) {
             parameterVariables[i].offset = i - parameterCount - 1;
         }
@@ -236,12 +235,16 @@ public class Parser {
         else if (tokens.peek().equals("=")) {
             tokens.advance();
             initialValue = parseExpression();
+
+            if (type != initialValue.getResultType())
+                throw new ParserException("Type mismatch: can not convert '" + initialValue.getResultType() + "' to '" + type + "'.");
         }
         else return null;
 
         if (context.getCurrentScope().localVariables.containsKey(name)) {
             throw new ParserException("Variable with name '" + name + "' already exists in this scope.");
         }
+
 
         Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset++, 1);
         context.getCurrentScope().variables.put(name, variable);
@@ -255,6 +258,9 @@ public class Parser {
 
         if (variable == null)
             throw new ParserException("Unknown variable '" + name + "'.");
+
+        if (variable.type != value.getResultType())
+            throw new ParserException("Type mismatch: can not convert '" + value.getResultType() + "' to '" + variable.type + "'.");
 
         return new Assign(variable, new Operand[0], value);
     }
@@ -340,7 +346,10 @@ public class Parser {
         tokens.advance();
 
         Operand value = parseExpression();
-        return new Ret(value, context.getCurrentScope().localVariables.size() - context.getCurrentScope().parameterVariables.size());
+        if (value.getResultType() != context.currentFunction.returnType)
+            throw new ParserException("Type mismatch: can not convert '" + value.getResultType() + "' to '" + context.currentFunction.returnType + "'.");
+
+        return new Ret(value);
     }
 
     Operand parseExpression() throws ParserException {
@@ -494,6 +503,9 @@ public class Parser {
                     }));
                 } else {
                     if (prev1.getResultType() == Primitive.STRING || prev2.getResultType() == Primitive.STRING) {
+                        if (operator.type != Operator.ADD.type)
+                            throw new ParserException("Invalid operation on string.");
+
                         postfix.add(i, new Concat(prev1, prev2));
                     } else {
                         postfix.add(i, new Arithmetic(new Operand[]{prev1, prev2, operator}));

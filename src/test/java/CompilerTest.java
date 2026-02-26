@@ -362,6 +362,19 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testTypeChecks() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          string get_greeting() {
+            return "Merhaba!";
+          }
+          string main() {
+            string greet = 5 + get_greeting();
+            return greet;
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();
