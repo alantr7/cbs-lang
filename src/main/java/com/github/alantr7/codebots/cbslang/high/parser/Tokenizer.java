@@ -1,6 +1,8 @@
 package com.github.alantr7.codebots.cbslang.high.parser;
 
 
+import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Primitive;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,10 +11,11 @@ public class Tokenizer {
     public static TokenQueue tokenize(String[] input) {
         List<String[]> lines = new LinkedList<>();
         List<Integer> lineNumbers = new LinkedList<>();
+        List<TokenQueue.Constant> constants = new LinkedList<>();
 
         for (int i = 0; i < input.length; i++) {
             var line = input[i];
-            var tokenized = tokenizeLine(line);
+            var tokenized = tokenizeLine(line, constants);
             if (tokenized.length == 0)
                 continue;
 
@@ -22,7 +25,7 @@ public class Tokenizer {
             System.out.println("['" + String.join("', '", tokenized) + "']");
         }
 
-        return new TokenQueue(lines.toArray(String[][]::new), lineNumbers.toArray(Integer[]::new));
+        return new TokenQueue(lines.toArray(String[][]::new), lineNumbers.toArray(Integer[]::new), constants.toArray(TokenQueue.Constant[]::new));
     }
 
     public static TokenQueue tokenize(String input) {
@@ -35,7 +38,7 @@ public class Tokenizer {
         return SYMBOLS.contains(String.valueOf(ch));
     }
 
-    private static String[] tokenizeLine(String line) {
+    private static String[] tokenizeLine(String line, List<TokenQueue.Constant> constants) {
         var tokens = new LinkedList<String>();
         boolean quotes = false;
         int start = 0;
@@ -44,7 +47,8 @@ public class Tokenizer {
             var character = line.charAt(i);
             if (character == '"') {
                 if (quotes) {
-                    tokens.add(line.substring(start, i + 1));
+                    tokens.add("@" + constants.size());
+                    constants.add(new TokenQueue.Constant(Primitive.STRING, line.substring(start, i + 1)));
                     start = i + 1;
                 }
                 quotes = !quotes;

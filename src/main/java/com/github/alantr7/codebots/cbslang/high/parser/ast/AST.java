@@ -1,19 +1,17 @@
 package com.github.alantr7.codebots.cbslang.high.parser.ast;
 
+import com.github.alantr7.codebots.cbslang.high.parser.TokenQueue;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Function;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.FunctionSignature;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Variable;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AST {
 
     public List<FunctionSignature> signatures = new LinkedList<>();
 
-    public Map<Object, Integer> constants = new HashMap<>();
+    public List<TokenQueue.Constant> constants = new LinkedList<>();
 
     public Map<String, Function> functions = new HashMap<>();
 
@@ -24,7 +22,11 @@ public class AST {
     }
 
     public int getConstantAddress(Object constant) {
-        return constants.getOrDefault(constant, -1);
+        for (int i = 0; i < constants.size(); i++) {
+            if (Objects.equals(constant, constants.get(i).value))
+                return i;
+        }
+        return -1;
     }
 
 }

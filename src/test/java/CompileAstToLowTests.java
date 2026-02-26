@@ -1,4 +1,5 @@
 import com.github.alantr7.codebots.cbslang.high.compiler.Compiler;
+import com.github.alantr7.codebots.cbslang.high.parser.TokenQueue;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
@@ -131,7 +132,7 @@ public class CompileAstToLowTests {
     @Test
     public void compileFloats() {
         Float fl1 = -5.0f;
-        compiler.ast.constants.put(fl1, 0);
+        compiler.ast.constants.add(new TokenQueue.Constant(Primitive.FLOAT, fl1));
         compiler.compileConstant("flt", fl1);
 
         compiler.compileExpression(new Arithmetic(new Operand[]{
@@ -139,6 +140,22 @@ public class CompileAstToLowTests {
           new Literal(Literal.INT, -4),
           Operator.ADD,
         }));
+    }
+
+    @Test
+    public void compileStrings() {
+        String hello = "hello";
+        compiler.ast.constants.add(new TokenQueue.Constant(Primitive.STRING, hello));
+        compiler.compileConstant("str", hello);
+
+        FunctionSignature print = new FunctionSignature("system", "print", Primitive.INT, new Type[] { Primitive.STRING });
+        compiler.ast.signatures.add(print);
+
+        compiler.compileSignatures();
+
+        compiler.compileStatement(new Call(print, new Operand[][]{{
+              new Access(new Variable(Primitive.STRING, true, 0, 1), new Operand[0])
+        }}));
     }
 
     @Test

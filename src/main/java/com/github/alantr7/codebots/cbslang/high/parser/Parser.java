@@ -25,15 +25,14 @@ public class Parser {
     private final ParserContext context = new ParserContext();
 
     public Parser(TokenQueue tokens) {
-        this.moduleRepository = new ModuleRepository();
-        this.tokens = tokens;
-        this.context.scopes.push(new Scope());
+        this(ModuleRepository.EMPTY, tokens);
     }
 
     public Parser(ModuleRepository modules, TokenQueue tokens) {
         this.moduleRepository = modules;
         this.tokens = tokens;
         this.context.scopes.push(new Scope());
+        ast.constants.addAll(Arrays.asList(tokens.getConstants()));
     }
 
     AST parse() throws ParserException {
@@ -459,7 +458,6 @@ public class Parser {
                 expectsOperator = true;
 
             }
-
         }
 
         while (!stack.peek().equals("#")) {
@@ -504,6 +502,12 @@ public class Parser {
     }
 
     Operand parseVariableAccessOrCall() throws ParserException {
+        // check if it's access to constant
+        if (tokens.peek().charAt(0) == '@') {
+            // todo: load type from constants, this is just testing
+            return new Access(new Variable(Primitive.STRING, true, Integer.parseInt(tokens.next().substring(1)), 1), new Operand[0]);
+        }
+
         byte prefix = 0;
         byte postfix = 0;
 

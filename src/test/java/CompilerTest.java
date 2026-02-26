@@ -290,6 +290,22 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testString() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          import system;
+          
+          string get_name() {
+            return "Alan";
+          }
+          
+          int main() {
+            string test = "Hello";
+            return get_name();
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();
