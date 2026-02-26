@@ -78,6 +78,9 @@ public class Compiler {
             builder.append("push ebp\n");
             builder.append("mov ebp, esp\n");
             builder.append("sub ebp, 2\n");
+        } else {
+            // without this it breaks when using constants
+            builder.append("mov ebp, esp\n");
         }
 
         for (Statement stmt : function.body) {
@@ -430,6 +433,14 @@ public class Compiler {
                 })));
                 builder.append("pop\n");
             }
+        }
+
+        else if (operand instanceof Concat concat) {
+            builder.append("; string concat\n");
+            compileExpression(concat.left);
+            compileExpression(concat.right);
+            builder.append("cat").append(" [esp-2], [esp-1]").append("\n");
+            builder.append("pop").append("\n");
         }
     }
 

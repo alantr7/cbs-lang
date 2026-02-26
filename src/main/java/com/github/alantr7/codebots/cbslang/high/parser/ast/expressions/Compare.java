@@ -1,5 +1,8 @@
 package com.github.alantr7.codebots.cbslang.high.parser.ast.expressions;
 
+import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Primitive;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Type;
+
 public class Compare implements Operand {
 
     public Operand left;
@@ -19,6 +22,11 @@ public class Compare implements Operand {
         this.left = left;
         this.operation = operation;
         this.right = right;
+    }
+
+    @Override
+    public Type getResultType() {
+        return Primitive.INT;
     }
 
 }

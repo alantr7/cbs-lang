@@ -476,6 +476,8 @@ public class Parser {
                 Operand prev1 = postfix.remove(i - 1);
                 i--;
 
+                // todo: check if operation can be performed on these two operands
+
                 postfix.remove(i);
                 if (operator.type >= (byte) 30) {
                     if (!(prev1 instanceof Access access))
@@ -491,9 +493,11 @@ public class Parser {
                       prev1, operator, prev2
                     }));
                 } else {
-                    postfix.add(i, new Arithmetic(new Operand[]{
-                      prev1, prev2, operator
-                    }));
+                    if (prev1.getResultType() == Primitive.STRING || prev2.getResultType() == Primitive.STRING) {
+                        postfix.add(i, new Concat(prev1, prev2));
+                    } else {
+                        postfix.add(i, new Arithmetic(new Operand[]{prev1, prev2, operator}));
+                    }
                 }
             }
         }

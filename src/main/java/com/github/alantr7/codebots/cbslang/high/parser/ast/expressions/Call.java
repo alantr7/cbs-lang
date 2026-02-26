@@ -1,6 +1,7 @@
 package com.github.alantr7.codebots.cbslang.high.parser.ast.expressions;
 
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.FunctionSignature;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Type;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
 
 public class Call implements Operand, Statement {
@@ -12,6 +13,11 @@ public class Call implements Operand, Statement {
     public Call(FunctionSignature function, Operand[][] arguments) {
         this.function = function;
         this.arguments = arguments;
+    }
+
+    @Override
+    public Type getResultType() {
+        return function.returnType;
     }
 
 }

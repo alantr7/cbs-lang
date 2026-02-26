@@ -295,13 +295,13 @@ public class CompilerTest {
         compiler = new Compiler(Parser.parse(repository, """
           import system;
           
-          string get_name() {
-            return "Alan";
+          string hey() {
+            return "Hello";
           }
           
-          int main() {
-            string test = "Hello";
-            return get_name();
+          string main() {
+            string name = "Alan";
+            return hey() + name;
           }
           """));
     }

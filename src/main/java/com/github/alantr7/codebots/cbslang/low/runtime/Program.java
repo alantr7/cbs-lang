@@ -78,6 +78,8 @@ public class Program {
                 case "ret" -> executor.handleRET(instruction);
                 case "exit" -> state.REGISTER_EIP.setValue(DataType.INT, instructions.length);
 
+                case "cat" -> executor.handleCAT(instruction);
+
                 case "cmp" -> executor.handleCMP(instruction);
                 case "add" -> executor.handleMATH(instruction, ProgramExecutor.ADD);
                 case "sub" -> executor.handleMATH(instruction, ProgramExecutor.SUB);

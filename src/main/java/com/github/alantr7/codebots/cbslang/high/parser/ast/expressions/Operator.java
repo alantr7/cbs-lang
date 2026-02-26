@@ -1,5 +1,7 @@
 package com.github.alantr7.codebots.cbslang.high.parser.ast.expressions;
 
+import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Primitive;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Type;
 import com.github.alantr7.codebots.cbslang.low.runtime.ProgramExecutor;
 
 public class Operator implements Operand {
@@ -30,6 +32,12 @@ public class Operator implements Operand {
 
     private Operator(byte type) {
         this.type = type;
+    }
+
+    @Override
+    public Type getResultType() {
+        // todo: this should not happen!
+        return Primitive.INT;
     }
 
 }

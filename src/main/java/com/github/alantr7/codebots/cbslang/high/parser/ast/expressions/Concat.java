@@ -4,26 +4,20 @@ import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Primitive;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Type;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
 
-public class Literal implements Statement, Operand {
+public class Concat implements Statement, Operand {
 
-    public static final byte INT = 0;
-    public static final byte FLOAT = 1;
+    public Operand left;
 
-    public Number value;
+    public Operand right;
 
-    public byte type;
-
-    public Literal() {
-    }
-
-    public Literal(byte type, Number value) {
-        this.type = type;
-        this.value = value;
+    public Concat(Operand left, Operand right) {
+        this.left = left;
+        this.right = right;
     }
 
     @Override
     public Type getResultType() {
-        return type == INT ? Primitive.INT : Primitive.FLOAT;
+        return Primitive.STRING;
     }
 
 }

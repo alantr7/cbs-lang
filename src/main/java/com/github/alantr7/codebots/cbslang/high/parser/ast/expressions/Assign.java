@@ -1,5 +1,6 @@
 package com.github.alantr7.codebots.cbslang.high.parser.ast.expressions;
 
+import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Type;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Variable;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
 
@@ -17,6 +18,11 @@ public class Assign implements Operand, Statement {
         this.variable = variable;
         this.indices = indices;
         this.value = value;
+    }
+
+    @Override
+    public Type getResultType() {
+        return variable.type;
     }
 
 }

@@ -215,4 +215,16 @@ public class ProgramExecutor {
         destination.setValue((DataType<Object>) resultType, resultCasted);
     }
 
+    void handleCAT(String[] instruction) {
+        assert instruction[0].equals("cat");
+
+        Data destination = program.state.locate(new String[] { instruction[1] });
+        Data source = program.state.locate(new String[] { instruction[2] });
+
+        String current = String.valueOf(destination.getValue());
+        String sourceVal = String.valueOf(source.getValue());
+
+        destination.setValue(DataType.STRING, current + sourceVal);
+    }
+
 }
