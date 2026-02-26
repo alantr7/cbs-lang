@@ -2,6 +2,7 @@ package com.github.alantr7.codebots.cbslang.low.runtime.modules;
 
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +26,10 @@ public abstract class Module {
 
     public ExternalFunction getFunction(String name) {
         return handlers.get(name);
+    }
+
+    public Collection<ExternalFunction> getFunctions() {
+        return handlers.values();
     }
 
 }

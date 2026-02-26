@@ -6,6 +6,7 @@ import com.github.alantr7.codebots.cbslang.low.runtime.modules.ModuleRepository;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.standard.SystemModule;
 import com.github.alantr7.codebots.cbslang.low.tokenizer.Tokenizer;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -17,6 +18,13 @@ import java.util.stream.Collectors;
 public class CompilerTest {
 
     Compiler compiler;
+
+    ModuleRepository repository = new ModuleRepository();
+
+    @Before
+    public void loadRepository() {
+        repository.registerModule(new SystemModule());
+    }
 
     @Test
     public void testEmptyFunction() throws ParserException {
@@ -269,12 +277,22 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testImport() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          import system;
+          int main() {
+            int rand = system.random();
+            system.print(rand);
+            
+            return rand;
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();
-
-        ModuleRepository repository = new ModuleRepository();
-        repository.registerModule(new SystemModule());
 
         String[][] tokenized = Tokenizer.tokenize(compiler.getOutput());
         Program program = new Program(tokenized, repository);

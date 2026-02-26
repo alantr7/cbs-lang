@@ -14,21 +14,21 @@ public class SystemModule extends Module {
 
     @Override
     public void setup() {
-        registerFunction("print", new ExternalFunction(DataType.VOID, DataType.STRING) {
+        registerFunction("print", new ExternalFunction(this, "print", DataType.VOID, DataType.STRING) {
             @Override
             public Data handle(Context context) {
                 return print(context);
             }
         });
 
-        registerFunction("random", new ExternalFunction(DataType.INT) {
+        registerFunction("random", new ExternalFunction(this, "random", DataType.INT) {
             @Override
             public Data handle(Context context) {
                 return new Data(DataType.INT, (int) (Math.random() * 500));
             }
         });
 
-        registerFunction("sleep", new ExternalFunction(DataType.VOID) {
+        registerFunction("sleep", new ExternalFunction(this, "sleep", DataType.VOID) {
             @Override
             public Data handle(Context context) {
                 if (context.getMemory()[0] == null) {

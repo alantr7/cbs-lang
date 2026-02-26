@@ -1,5 +1,6 @@
 package com.github.alantr7.codebots.cbslang.low.runtime.modules;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,8 +14,13 @@ public class ModuleRepository {
         return modules.get(name);
     }
 
+    public Collection<Module> getModules() {
+        return modules.values();
+    }
+
     public void registerModule(Module module) {
         modules.put(module.getName(), module);
     }
+
 
 }

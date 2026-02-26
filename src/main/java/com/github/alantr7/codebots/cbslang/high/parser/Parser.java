@@ -5,20 +5,33 @@ import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.*;
+import com.github.alantr7.codebots.cbslang.low.runtime.modules.ExternalFunction;
+import com.github.alantr7.codebots.cbslang.low.runtime.modules.Module;
+import com.github.alantr7.codebots.cbslang.low.runtime.modules.ModuleRepository;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Stack;
 
 public class Parser {
 
     private final TokenQueue tokens;
 
+    private final ModuleRepository moduleRepository;
+
     private final AST ast = new AST();
 
     private final ParserContext context = new ParserContext();
 
     public Parser(TokenQueue tokens) {
+        this.moduleRepository = new ModuleRepository();
+        this.tokens = tokens;
+        this.context.scopes.push(new Scope());
+    }
+
+    public Parser(ModuleRepository modules, TokenQueue tokens) {
+        this.moduleRepository = modules;
         this.tokens = tokens;
         this.context.scopes.push(new Scope());
     }
@@ -34,8 +47,7 @@ public class Parser {
             // - functions
 
             if (nextToken.equals("import")) {
-                // parse import
-                tokens.advance();
+                parseImport();
             }
             else if (nextToken.equals("struct")) {
                 // parse struct
@@ -48,6 +60,21 @@ public class Parser {
 
         }
         return ast;
+    }
+
+    void parseImport() throws ParserException {
+        tokens.advance();
+        String name = tokens.next();
+        ParserHelper.expect(tokens.next(), ";");
+
+        Module module = moduleRepository.getModule(name);
+        if (module == null)
+            throw new ParserException("Unknown module '" + name + "'.");
+
+        for (ExternalFunction fun : module.getFunctions()) {
+            ast.signatures.add(fun.createSignature());
+            System.out.println("imported " + fun.getName());
+        }
     }
 
     void parseFunctionOrVariable() throws ParserException {
@@ -489,14 +516,24 @@ public class Parser {
             prefix = Unary.PREFIX_DECREMENT;
         }
 
-        String variableName = tokens.next();
-
-        if ((prefix == 0) && tokens.peek().equals("(")) {
+        String nextToken = tokens.next();
+        if ((prefix == 0) && (tokens.peek().equals("(") || tokens.peek().equals("."))) {
+            String moduleName;
+            String functionName;
+            if (tokens.peek().equals(".")) {
+                tokens.advance();
+                moduleName = nextToken;
+                functionName = tokens.next();
+                ParserHelper.expect(tokens.peek(), "(");
+            } else {
+                moduleName = null;
+                functionName = nextToken;
+            }
             tokens.advance();
 
-            FunctionSignature function = ast.signatures.stream().filter(s -> s.name.equals(variableName)).findFirst().orElse(null);
+            FunctionSignature function = ast.signatures.stream().filter(s -> s.name.equals(functionName) && Objects.equals(moduleName, s.module)).findFirst().orElse(null);
             if (function == null)
-                throw new ParserException("Unknown member '" + variableName + "'.");
+                throw new ParserException("Unknown member '" + functionName + "'.");
 
             Operand[][] arguments = new Operand[8][1];
             int argumentCount = 0;
@@ -520,7 +557,7 @@ public class Parser {
             return new Call(function, Arrays.copyOf(arguments, argumentCount));
         }
         else {
-            Variable variable = context.getCurrentScope().variables.get(variableName);
+            Variable variable = context.getCurrentScope().variables.get(nextToken);
             if (prefix == 0) {
                 if (tokens.peek().equals("++")) {
                     // is postfix
@@ -541,7 +578,7 @@ public class Parser {
             }
         }
 
-        throw new ParserException("Unknown member '" + variableName + "'.");
+        throw new ParserException("Unknown member '" + nextToken + "'.");
     }
 
     Operand parseOperator(String raw) {
@@ -577,7 +614,11 @@ public class Parser {
     }
 
     public static AST parse(String code) throws ParserException {
-        return new Parser(Tokenizer.tokenize(code.split("\n"))).parse();
+        return parse(new ModuleRepository(), code);
+    }
+
+    public static AST parse(ModuleRepository repository, String code) throws ParserException {
+        return new Parser(repository, Tokenizer.tokenize(code.split("\n"))).parse();
     }
 
 }
