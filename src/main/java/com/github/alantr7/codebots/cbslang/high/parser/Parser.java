@@ -452,7 +452,13 @@ public class Parser {
                 i--;
 
                 postfix.remove(i);
-                if (operator.type >= (byte) 20) {
+                if (operator.type >= (byte) 30) {
+                    if (!(prev1 instanceof Access access))
+                        throw new ParserException("Can not assign to non variable.");
+
+                    postfix.add(i, new Assign(access.variable, new Operand[0], prev2));
+                }
+                else if (operator.type >= (byte) 20) {
                     postfix.add(i, new Compare(prev1, operator.type, prev2));
                 }
                 else if (operator.type >= (byte) 10) {
@@ -526,6 +532,8 @@ public class Parser {
             case "<=" -> Operator.LESS_EQUALS;
             case ">" -> Operator.GREATER_THAN;
             case ">=" -> Operator.GREATER_EQUALS;
+
+            case "=" -> Operator.ASSIGN;
 
             default -> null;
         };

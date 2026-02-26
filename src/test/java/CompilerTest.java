@@ -238,11 +238,22 @@ public class CompilerTest {
         compiler = new Compiler(Parser.parse("""
           int main() {
             int a = 0;
-            for (int i = 0; i < 10; 1) {
+            for (int i = 0; i < 10; i = i + 1) {
               a = a + 2;
-              i = i + 1;
             };
             return a;
+          }
+          """));
+    }
+
+    @Test
+    public void testAssignAsExpression() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int main() {
+            int a;
+            int b = (a = 3);
+            
+            return b;
           }
           """));
     }

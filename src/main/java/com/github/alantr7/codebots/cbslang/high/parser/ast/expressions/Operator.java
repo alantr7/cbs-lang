@@ -21,6 +21,8 @@ public class Operator implements Operand {
     public static final Operator LESS_EQUALS = new Operator(Compare.LESS_EQUALS);
     public static final Operator GREATER_EQUALS = new Operator(Compare.GREATER_EQUALS);
 
+    public static final Operator ASSIGN = new Operator(Assign.SET);
+
     private Operator(byte type) {
         this.type = type;
     }

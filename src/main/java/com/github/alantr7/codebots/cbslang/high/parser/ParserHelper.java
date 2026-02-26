@@ -16,7 +16,8 @@ public class ParserHelper {
       "^",
       "|",
       "&&",
-      "||"
+      "||",
+      "="
     );
     public static boolean isOperator(String input) {
         if (input.length() > 2 || input.isEmpty())
@@ -39,9 +40,10 @@ public class ParserHelper {
 
     public static int getPrecedence(String input) {
         return switch (input) {
-            case "||" -> 2;
-            case "&&" -> 3;
-            case "(", ")", "#" -> 1;
+            case "(", ")", "#" -> 1; // was 1
+            case "="  -> 2; // maybe above NEEDS to be 1. check if breaks
+            case "||" -> 3;
+            case "&&" -> 4;
             case "<", ">", "==", "!=", "<=", ">=" -> 7;
             case "+", "-" -> 8;
             case "*", "/" -> 9;

@@ -11,6 +11,8 @@ public class Assign implements Operand, Statement {
 
     public Operand value;
 
+    public static final byte SET = (byte) 30;
+
     public Assign(Variable variable, Operand[] indices, Operand value) {
         this.variable = variable;
         this.indices = indices;
