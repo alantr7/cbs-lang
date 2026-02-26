@@ -23,7 +23,6 @@ public class CompilerTest {
         compiler = new Compiler(Parser.parse("""
           int main() {}
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -32,7 +31,6 @@ public class CompilerTest {
           int add(int a, int b) {}
           int sub(int a, int b) {}
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -43,7 +41,6 @@ public class CompilerTest {
             int d;
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -53,7 +50,6 @@ public class CompilerTest {
             2+(5+5)*2;
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -66,7 +62,6 @@ public class CompilerTest {
             int d = 5+5;
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -79,7 +74,6 @@ public class CompilerTest {
             b= 2;
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -92,7 +86,6 @@ public class CompilerTest {
             return b * 3;
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -110,7 +103,6 @@ public class CompilerTest {
             return get_num() * 2;
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -125,7 +117,6 @@ public class CompilerTest {
             return c;
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -138,7 +129,6 @@ public class CompilerTest {
             return (0 && calc()) || calc();
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -149,7 +139,6 @@ public class CompilerTest {
             return a < 5;
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -163,7 +152,6 @@ public class CompilerTest {
             return 56;
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -180,7 +168,6 @@ public class CompilerTest {
             }
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -197,7 +184,6 @@ public class CompilerTest {
             return fact(5);
           }
           """));
-        compiler.experimentalCompile();
     }
 
     @Test
@@ -215,11 +201,29 @@ public class CompilerTest {
             return test(test(test(12)));
           }
           """));
-        compiler.experimentalCompile();
+    }
+
+    @Test
+    public void testWhileLoop() throws ParserException {
+        compiler = new Compiler(Parser.parse("""
+          int main() {
+            int i = 0;
+            while (1) {
+              if (i > 80) {
+                return i;
+              }
+              
+              i = i + 1;
+            }
+            return i;
+          }
+          """));
     }
 
     @After
     public void showResults() throws Exception {
+        compiler.experimentalCompile();
+
         ModuleRepository repository = new ModuleRepository();
         repository.registerModule(new SystemModule());
 

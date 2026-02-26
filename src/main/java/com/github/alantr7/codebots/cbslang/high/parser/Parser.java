@@ -4,10 +4,7 @@ import com.github.alantr7.codebots.cbslang.exceptions.ParserException;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Declare;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.If;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Ret;
-import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Statement;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.*;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -164,6 +161,8 @@ public class Parser {
         switch (nextToken) {
             case "if":
                 return parseIf();
+            case "while":
+                return parseWhile();
             case "return":
                 return parseReturn();
             default:
@@ -251,6 +250,20 @@ public class Parser {
             ParserHelper.expect(tokens.next(), "}");
             return new If(condition, body, new If(null, elseBody, null));
         }
+    }
+
+    While parseWhile() throws ParserException {
+        tokens.advance();
+        ParserHelper.expect(tokens.next(), "(");
+
+        Operand condition = parseExpression();
+
+        ParserHelper.expect(tokens.next(), ")");
+        ParserHelper.expect(tokens.next(), "{");
+        Statement[] body = parseBody();
+        ParserHelper.expect(tokens.next(), "}");
+
+        return new While(condition, body);
     }
 
     Ret parseReturn() throws ParserException {
