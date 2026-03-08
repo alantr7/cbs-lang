@@ -147,7 +147,7 @@ public class ProgramExecutor {
                 }
 
                 program.state.EXTERNAL_FUNCTION = Integer.parseInt(instruction[1].substring(1));
-                program.state.EXTERNAL_FUNCTION_CONTEXT = new Context(arguments);
+                program.state.EXTERNAL_FUNCTION_CONTEXT = new Context(program, arguments);
 
                 Data returnValue = handler.handle(program.state.EXTERNAL_FUNCTION_CONTEXT);
                 if (returnValue != null) {
