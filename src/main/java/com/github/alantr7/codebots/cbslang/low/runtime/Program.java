@@ -7,6 +7,7 @@ import com.github.alantr7.codebots.cbslang.low.runtime.modules.Module;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.ModuleRepository;
 import lombok.Getter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Program {
@@ -19,6 +20,8 @@ public class Program {
 
     @Getter
     final ProgramState state = new ProgramState();
+
+    final Map<String, Object> extras = new HashMap<>();
 
     public Program(String[][] instructions, ModuleRepository repository) {
         this.moduleRepository = repository;
@@ -98,6 +101,14 @@ public class Program {
             e.printStackTrace();
             state.REGISTER_EIP.setValue(DataType.INT, instructions.length);
         }
+    }
+
+    public Object getExtra(String key) {
+        return extras.get(key);
+    }
+
+    public void setExtra(String key, Object value) {
+        extras.put(key, value);
     }
 
 }
