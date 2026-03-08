@@ -23,6 +23,7 @@ public class Program {
 
     final Map<String, Object> extras = new HashMap<>();
 
+    @Getter
     Exception error;
 
     public Program(String[][] instructions, ModuleRepository repository) {
@@ -107,6 +108,10 @@ public class Program {
 
             interrupt(e);
         }
+    }
+
+    public boolean isInterrupted() {
+        return error != null;
     }
 
     public void interrupt(Exception error) {
