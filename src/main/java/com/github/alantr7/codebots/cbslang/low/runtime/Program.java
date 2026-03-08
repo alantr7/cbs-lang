@@ -23,6 +23,8 @@ public class Program {
 
     final Map<String, Object> extras = new HashMap<>();
 
+    Exception error;
+
     public Program(String[][] instructions, ModuleRepository repository) {
         this.moduleRepository = repository;
         this.instructions = instructions;
@@ -97,10 +99,15 @@ public class Program {
             }
         } catch (Exception e) {
             System.out.println("Failed at: " + String.join(", ", instructions[(int) state.REGISTER_EIP.getValue() - 1]));
-
             e.printStackTrace();
-            state.REGISTER_EIP.setValue(DataType.INT, instructions.length);
+
+            interrupt(e);
         }
+    }
+
+    public void interrupt(Exception error) {
+        this.error = error;
+        state.REGISTER_EIP.setValue(DataType.INT, instructions.length);
     }
 
     public Object getExtra(String key) {
