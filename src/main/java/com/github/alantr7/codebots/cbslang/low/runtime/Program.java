@@ -35,6 +35,10 @@ public class Program {
             next();
     }
 
+    public boolean hasNext() {
+        return (int) state.REGISTER_EIP.getValue() < instructions.length;
+    }
+
     public void next() {
         if (state.EXTERNAL_FUNCTION_CONTEXT != null) {
             if (state.EXTERNAL_FUNCTION_CONTEXT.isRecall()) {
