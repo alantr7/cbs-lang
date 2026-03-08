@@ -29,6 +29,9 @@ public abstract class ExternalFunction {
         this.parameterTypes = parameterTypes;
     }
 
+    public void prepareContext(Context context) {
+    }
+
     public abstract Data handle(Context context);
 
     public FunctionSignature createSignature() {
