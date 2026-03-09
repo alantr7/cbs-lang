@@ -21,4 +21,9 @@ public class Primitive extends Type {
         this.name = name;
     }
 
+    // static final members are only initialized when class is accessed
+    // this is a temporary and a very ugly workaround until i figure something out
+    public static void fix() {
+    }
+
 }

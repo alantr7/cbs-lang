@@ -286,9 +286,13 @@ public class CompilerTest {
     public void testImport() throws ParserException {
         compiler = new Compiler(Parser.parse(repository, """
           import system;
+          
           int main() {
             int rand = system.random();
-            system.print(rand);
+            system.print("Value is: " + rand);
+            
+            rand = 20;
+            system.print("Now it's: " + rand);
             
             return rand;
           }
@@ -371,6 +375,31 @@ public class CompilerTest {
           string main() {
             string greet = "Hello " + get_name() + "!";
             return greet;
+          }
+          """));
+    }
+
+    @Test
+    public void externalFunctionBetterTest() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          import system;
+          
+          int fact(int n) {
+             if (n == 1) {
+                system.print("It's 1.");
+                return 1;
+             }
+             system.print("It's " + n + ".");
+             return n * fact(n - 1);
+          }
+          
+          int main() {
+             int num = 2;
+             system.print("Calculating factorial of " + num + "...");
+          
+             int fact = fact(num);
+             system.print("It is: " + fact + "! Heh.");
+             return 0;
           }
           """));
     }

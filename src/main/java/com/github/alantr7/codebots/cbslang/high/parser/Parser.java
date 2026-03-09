@@ -5,6 +5,7 @@ import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.*;
+import com.github.alantr7.codebots.cbslang.low.runtime.memory.DataType;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.ExternalFunction;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.Module;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.ModuleRepository;
@@ -36,6 +37,7 @@ public class Parser {
     }
 
     AST parse() throws ParserException {
+        Primitive.fix();
         while (!tokens.isEmpty()) {
             String nextToken = tokens.peek();
 

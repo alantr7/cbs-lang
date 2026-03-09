@@ -134,16 +134,19 @@ public class ProgramExecutor {
 
             // check if function is imported
             if (instruction[1].charAt(0) == '.') {
+                handlePUSH(new String[] { "push", "ebp" });
+                handleMOV(new String[] { "mov", "ebp", "esp" });
+                handleMATH(new String[] { "sub", "ebp", "1" }, ProgramExecutor.SUB);
                 Map.Entry<String, String> imp = program.state.IMPORTS.get(Integer.parseInt(instruction[1].substring(1)));
                 Module module = program.moduleRepository.getModule(imp.getKey());
                 ExternalFunction handler = module.getFunction(imp.getValue());
 
-                int ebp = program.state.REGISTER_ESP.getValueAs(DataType.INT) - 1;
-                int argumentsCount = (int) program.state.locate(ebp - 1).getValue();
+                int ebp = program.state.REGISTER_EBP.getValueAs(DataType.INT);
+                int argumentsCount = (int) program.state.locate(ebp - 2).getValue();
 
                 Data[] arguments = new Data[argumentsCount];
-                for (int i = -argumentsCount - 1; i < -1; i++) {
-                    arguments[i + argumentsCount + 1] = program.state.locate(ebp + i);
+                for (int i = 0; i < argumentsCount; i++) {
+                    arguments[i] = program.state.locate(ebp - argumentsCount - 2 + i);
                 }
 
                 program.state.EXTERNAL_FUNCTION = Integer.parseInt(instruction[1].substring(1));
@@ -154,6 +157,8 @@ public class ProgramExecutor {
                 if (returnValue != null) {
                     program.state.REGISTER_RAX.setValue((DataType) returnValue.getDataType(), returnValue.getValue());
                 }
+
+                handleRET(new String[] { "ret" });
             }
         }
 
