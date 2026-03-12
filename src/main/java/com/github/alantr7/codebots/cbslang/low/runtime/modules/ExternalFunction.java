@@ -1,5 +1,6 @@
 package com.github.alantr7.codebots.cbslang.low.runtime.modules;
 
+import com.github.alantr7.codebots.cbslang.exceptions.ExecutionException;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.FunctionSignature;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Type;
 import com.github.alantr7.codebots.cbslang.low.runtime.memory.Data;
@@ -32,7 +33,7 @@ public abstract class ExternalFunction {
     public void prepareContext(Context context) {
     }
 
-    public abstract Data handle(Context context);
+    public abstract Data handle(Context context) throws ExecutionException;
 
     public FunctionSignature createSignature() {
         return new FunctionSignature(

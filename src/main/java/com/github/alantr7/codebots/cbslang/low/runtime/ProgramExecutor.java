@@ -153,9 +153,14 @@ public class ProgramExecutor {
                 program.state.EXTERNAL_FUNCTION_CONTEXT = new Context(program, arguments);
                 handler.prepareContext(program.state.EXTERNAL_FUNCTION_CONTEXT);
 
-                Data returnValue = handler.handle(program.state.EXTERNAL_FUNCTION_CONTEXT);
-                if (returnValue != null) {
-                    program.state.REGISTER_RAX.setValue((DataType) returnValue.getDataType(), returnValue.getValue());
+                try {
+                    Data returnValue = handler.handle(program.state.EXTERNAL_FUNCTION_CONTEXT);
+                    if (returnValue != null) {
+                        program.state.REGISTER_RAX.setValue((DataType) returnValue.getDataType(), returnValue.getValue());
+                    }
+                } catch (Exception e) {
+                    program.interrupt(e);
+                    return;
                 }
 
                 handleRET(new String[] { "ret" });

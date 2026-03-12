@@ -47,9 +47,14 @@ public class Program {
                 Module module = moduleRepository.getModule(imp.getKey());
                 ExternalFunction handler = module.getFunction(imp.getValue());
 
-                Data returnValue = handler.handle(state.EXTERNAL_FUNCTION_CONTEXT);
-                if (returnValue != null) {
-                    state.EXTERNAL_FUNCTION_CONTEXT = null;
+                try {
+                    Data returnValue = handler.handle(state.EXTERNAL_FUNCTION_CONTEXT);
+                    if (returnValue != null) {
+                        state.EXTERNAL_FUNCTION_CONTEXT = null;
+                    }
+                } catch (Exception e) {
+                    interrupt(e);
+                    return;
                 }
             } else {
                 state.EXTERNAL_FUNCTION_CONTEXT = null;
