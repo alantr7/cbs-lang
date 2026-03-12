@@ -551,7 +551,9 @@ public class Parser {
         // check if it's access to constant
         if (tokens.peek().charAt(0) == '@') {
             // todo: load type from constants, this is just testing
-            return new Access(new Variable(Primitive.STRING, true, Integer.parseInt(tokens.next().substring(1)), 1), new Operand[0]);
+            int index = Integer.parseInt(tokens.next().substring(1));
+            TokenQueue.Constant constant = tokens.getConstants()[index];
+            return new Access(new Variable(constant.type, true, index, 1), new Operand[0]);
         }
 
         byte prefix = 0;

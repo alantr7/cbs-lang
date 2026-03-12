@@ -58,6 +58,11 @@ public class Tokenizer {
                 continue;
 
             if (isSymbol(character)) {
+                // it's a float
+                if (character == '.' && line.substring(start, i).matches("\\d+")) {
+                    continue;
+                }
+
                 String token = null;
 
                 if (character == '=' && tokens.peekLast() != null) {
@@ -85,14 +90,23 @@ public class Tokenizer {
                 }
 
                 if (!token.isBlank()) {
-                    // Check if it's a negative number
-                    if (token.matches("\\d+") && tokens.size() > 1) {
+                    if (token.matches("(\\d+\\.\\d+)|(\\d+)f?") && tokens.size() > 1) {
                         String previous = tokens.get(tokens.size() - 1);
                         String previous2 = tokens.get(tokens.size() - 2);
 
+                        // Check if it's a negative number
                         if (previous.equals("-") && previous2.length() == 1 && isSymbol(previous2.charAt(0))) {
                             tokens.removeLast();
                             token = "-" + token;
+                        }
+
+                        // Turn token into a constant
+                        if (token.matches("-?((\\d+\\.\\d+f?)|(\\d+f))")) {
+                            tokens.add("@" + constants.size());
+                            constants.add(new TokenQueue.Constant(Primitive.FLOAT, token));
+
+                            start = i;
+                            continue;
                         }
                     }
                     tokens.add(token);
@@ -108,6 +122,7 @@ public class Tokenizer {
         var last = line.substring(start);
         if (!last.isBlank())
             tokens.add(last);
+
         return tokens.toArray(String[]::new);
     }
 

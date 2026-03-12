@@ -434,6 +434,18 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testFloats() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          import system;
+          int main() {
+            float pi = 3.14;
+            float e = 2.71;
+            system.print(pi + " + " + e + " = " + (pi + e));
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();
