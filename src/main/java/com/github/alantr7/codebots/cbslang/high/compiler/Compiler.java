@@ -72,7 +72,7 @@ public class Compiler {
         builder.append("; Function: ").append(function.signature.name).append("(").append(")").append("\n");
         builder.append(function.signature.name).append(":\n");
 
-        context.currentFunction = function.signature;
+        context.currentFunction = function;
 
         if (!function.signature.name.equals("main")) {
             builder.append("push ebp\n");
@@ -89,10 +89,7 @@ public class Compiler {
             compileStatement(stmt);
         }
 
-        // todo: variable cleanup
-
         context.currentFunction = null;
-
         builder.append("\n");
     }
 
@@ -114,6 +111,7 @@ public class Compiler {
         builder.append("jmp if_after").append(resultId).append("\n");
 
         builder.append("if_after_body").append(labelId).append(":\n");
+        builder.append("sub esp, ").append(ifs.scope.getLocalVariables().size()).append("\n");
 
         // Elses
         if (ifs.elseStmt != null) {
@@ -141,6 +139,8 @@ public class Compiler {
         for (Statement stmt : loop.body) {
             compileStatement(stmt);
         }
+
+        builder.append("sub esp, ").append(loop.scope.getLocalVariables().size()).append("\n");
         builder.append("jmp loop_start").append(labelId).append("\n");
 
         // Label after the loop
@@ -243,8 +243,9 @@ public class Compiler {
         else if (statement instanceof Ret ret) {
             compileExpression(ret.value);
             builder.append("pop rax\n");
+            builder.append("sub esp, ").append(context.currentFunction.scope.getLocalVariables().size()).append("\n");
 
-            if (context.currentFunction.name.equals("main")) {
+            if (context.currentFunction.signature.name.equals("main")) {
                 builder.append("exit\n");
             } else {
                 builder.append("ret\n");

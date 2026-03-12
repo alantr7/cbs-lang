@@ -414,6 +414,26 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testScopeVariableCleanup() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          import system;
+          int main() {
+            int i = 0;
+            while ((i++) < 10) {
+              int rand = system.random();
+              system.print("Value: " + rand);
+            }
+            return 0;
+          }
+          
+          int test() {
+            int a = 5;
+            return a;
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();

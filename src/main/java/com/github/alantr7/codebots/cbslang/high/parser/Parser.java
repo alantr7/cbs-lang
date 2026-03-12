@@ -60,6 +60,12 @@ public class Parser {
             }
 
         }
+
+        System.out.println("Scopes:");
+        for (Scope scope : context.scopes) {
+            System.out.println(scope);
+        }
+
         return ast;
     }
 
@@ -102,8 +108,7 @@ public class Parser {
 
     void parseFunction(Type type, String name) throws ParserException {
         ParserHelper.expect(tokens.next(), "(");
-        Scope functionScope = context.getCurrentScope().createChild(false);
-        context.scopes.add(functionScope);
+        Scope functionScope = context.nestScope(false, false);
 
         Type[] parameterTypes = new Type[8];
         Variable[] parameterVariables = new Variable[8];
@@ -155,10 +160,11 @@ public class Parser {
 
         ParserHelper.expect(tokens.next(), "}");
 
-        Function function = new Function(signature, body);
+        Function function = new Function(signature, body, functionScope);
         ast.functions.put(name, function);
 
         context.currentFunction = null;
+        context.scopes.pop();
     }
 
     Statement[] parseBody() throws ParserException {
@@ -283,22 +289,28 @@ public class Parser {
         ParserHelper.expect(tokens.next(), ")");
         ParserHelper.expect(tokens.next(), "{");
 
+        Scope scope = context.nestScope(false, true);
         Statement[] body = parseBody();
+        context.scopes.pop();
 
         ParserHelper.expect(tokens.next(), "}");
 
         if (!tokens.peek().equals("else")) {
-            return new If(condition, body, null);
+            return new If(condition, body, scope, null);
         }
 
         tokens.advance();
         if (tokens.peek().equals("if")) {
-            return new If(condition, body, parseIf());
+            return new If(condition, body, scope, parseIf());
         } else {
             ParserHelper.expect(tokens.next(), "{");
+
+            Scope elseScope = context.nestScope(false, true);
             Statement[] elseBody = parseBody();
+            context.scopes.pop();
+
             ParserHelper.expect(tokens.next(), "}");
-            return new If(condition, body, new If(null, elseBody, null));
+            return new If(condition, body, scope, new If(null, elseBody, elseScope, null));
         }
     }
 
@@ -310,23 +322,27 @@ public class Parser {
 
         ParserHelper.expect(tokens.next(), ")");
         ParserHelper.expect(tokens.next(), "{");
+        Scope scope = context.nestScope(false, true);
         Statement[] body = parseBody();
+        context.scopes.pop();
         ParserHelper.expect(tokens.next(), "}");
 
-        return new While(condition, body);
+        return new While(condition, body, scope);
     }
 
     While parseDoWhile() throws ParserException {
         tokens.advance();
         ParserHelper.expect(tokens.next(), "{");
+        Scope scope = context.nestScope(false, true);
         Statement[] body = parseBody();
+        context.scopes.pop();
         ParserHelper.expect(tokens.next(), "}");
         ParserHelper.expect(tokens.next(), "while");
         ParserHelper.expect(tokens.next(), "(");
         Operand condition = parseExpression();
         ParserHelper.expect(tokens.next(), ")");
 
-        return new While(condition, body, true);
+        return new While(condition, body, scope, true);
     }
 
     For parseFor() throws ParserException {

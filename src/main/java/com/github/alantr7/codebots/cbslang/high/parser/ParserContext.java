@@ -15,4 +15,11 @@ public class ParserContext {
         return scopes.peek();
     }
 
+    public Scope nestScope(boolean copyLocals, boolean copyVariableOffset) {
+        Scope scope = getCurrentScope().createChild(copyLocals, copyVariableOffset);
+        scopes.add(scope);
+
+        return scope;
+    }
+
 }
