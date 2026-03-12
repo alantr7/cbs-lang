@@ -100,8 +100,8 @@ public class Compiler {
         if (ifs.expression != null) {
             compileExpression(ifs.expression);
             builder.append("pop eax\n");
-            builder.append("cmp eax, 1\n");
-            builder.append("jne if_after_body").append(labelId).append("\n");
+            builder.append("cmp eax, 0\n");
+            builder.append("je if_after_body").append(labelId).append("\n");
         }
 
         // Body
@@ -132,8 +132,8 @@ public class Compiler {
         // Compile loop condition.
         compileExpression(loop.expression);
         builder.append("pop eax\n");
-        builder.append("cmp eax, 1\n");
-        builder.append("jne loop_after").append(labelId).append("\n");
+        builder.append("cmp eax, 0\n");
+        builder.append("je loop_after").append(labelId).append("\n");
 
         // Body
         for (Statement stmt : loop.body) {
@@ -155,8 +155,8 @@ public class Compiler {
         // Compile loop condition.
         compileExpression(loop.expression);
         builder.append("pop eax\n");
-        builder.append("cmp eax, 1\n");
-        builder.append("jne loop_after").append(labelId).append("\n");
+        builder.append("cmp eax, 0\n");
+        builder.append("je loop_after").append(labelId).append("\n");
 
         // Body
         for (Statement stmt : loop.body) {
@@ -184,8 +184,8 @@ public class Compiler {
         // Compile loop condition.
         compileExpression(loop.condition);
         builder.append("pop eax\n");
-        builder.append("cmp eax, 1\n");
-        builder.append("jne loop_after").append(labelId).append("\n");
+        builder.append("cmp eax, 0\n");
+        builder.append("je loop_after").append(labelId).append("\n");
 
         // Body
         for (Statement stmt : loop.body) {
