@@ -162,6 +162,8 @@ public class Compiler {
         for (Statement stmt : loop.body) {
             compileStatement(stmt);
         }
+
+        builder.append("sub esp, ").append(loop.scope.getLocalVariables().size()).append("\n");
         builder.append("jmp loop_start").append(labelId).append("\n");
 
         // Label after the loop
@@ -198,6 +200,7 @@ public class Compiler {
             append("pop");
         }
 
+        builder.append("sub esp, ").append(loop.scope.getLocalVariables().size()).append("\n");
         builder.append("jmp loop_start").append(labelId).append("\n");
 
         // Label after the loop

@@ -361,10 +361,12 @@ public class Parser {
 
         ParserHelper.expect(tokens.next(), ")");
         ParserHelper.expect(tokens.next(), "{");
+        Scope scope = context.nestScope(false, true);
         Statement[] body = parseBody();
         ParserHelper.expect(tokens.next(), "}");
+        context.scopes.pop();
 
-        return new For((ForInitExpr) init, condition, update, body);
+        return new For((ForInitExpr) init, condition, update, body, scope);
     }
 
     Ret parseReturn() throws ParserException {

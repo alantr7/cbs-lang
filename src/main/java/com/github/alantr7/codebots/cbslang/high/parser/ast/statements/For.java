@@ -1,5 +1,6 @@
 package com.github.alantr7.codebots.cbslang.high.parser.ast.statements;
 
+import com.github.alantr7.codebots.cbslang.high.parser.Scope;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.Operand;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,11 +17,14 @@ public class For implements Statement {
 
     public Statement[] body;
 
-    public For(@Nullable ForInitExpr init, @Nullable Operand condition, @Nullable Operand update, Statement[] body) {
+    public Scope scope;
+
+    public For(@Nullable ForInitExpr init, @Nullable Operand condition, @Nullable Operand update, Statement[] body, Scope scope) {
         this.init = init;
         this.condition = condition;
         this.update = update;
         this.body = body;
+        this.scope = scope;
     }
 
 }
