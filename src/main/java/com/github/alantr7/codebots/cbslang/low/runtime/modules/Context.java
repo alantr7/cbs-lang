@@ -2,6 +2,7 @@ package com.github.alantr7.codebots.cbslang.low.runtime.modules;
 
 import com.github.alantr7.codebots.cbslang.low.runtime.Program;
 import com.github.alantr7.codebots.cbslang.low.runtime.memory.Data;
+import com.github.alantr7.codebots.cbslang.low.runtime.memory.DataType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +23,10 @@ public class Context {
     public Context(Program program, Data[] arguments) {
         this.program = program;
         this.arguments = arguments;
+    }
+
+    public <T> T getArgumentAs(int index, DataType<T> type) {
+        return arguments[index].getValueAs(type);
     }
 
 }

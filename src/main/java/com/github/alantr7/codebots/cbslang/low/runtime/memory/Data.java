@@ -2,6 +2,8 @@ package com.github.alantr7.codebots.cbslang.low.runtime.memory;
 
 import lombok.Getter;
 
+import java.util.function.Function;
+
 public class Data {
 
     @Getter
@@ -24,8 +26,29 @@ public class Data {
     }
 
     @SuppressWarnings("unchecked")
+    public <T> void updateValue(DataType<T> type, Function<T, T> updateFunction) {
+        value = updateFunction.apply((T) value);
+    }
+
+    @SuppressWarnings("unchecked")
     public <T> T getValueAs(DataType<T> type) {
         return (T) value;
+    }
+
+    public static Data of(int integer) {
+        return new Data(DataType.INT, integer);
+    }
+
+    public static Data of(long number) {
+        return new Data(DataType.LONG, number);
+    }
+
+    public static Data of(float number) {
+        return new Data(DataType.FLOAT, number);
+    }
+
+    public static Data of(String string) {
+        return new Data(DataType.STRING, string);
     }
 
 }

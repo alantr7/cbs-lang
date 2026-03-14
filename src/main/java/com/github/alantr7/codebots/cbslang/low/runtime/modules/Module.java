@@ -24,6 +24,10 @@ public abstract class Module {
         handlers.put(name, handler);
     }
 
+    protected void registerFunction(ExternalFunction handler) {
+        handlers.put(handler.getName(), handler);
+    }
+
     public ExternalFunction getFunction(String name) {
         return handlers.get(name);
     }
