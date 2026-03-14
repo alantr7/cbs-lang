@@ -64,6 +64,9 @@ public class Program {
 
                 try {
                     Data returnValue = handler.handle(state.EXTERNAL_FUNCTION_CONTEXT);
+                    if (state.EXTERNAL_FUNCTION_CONTEXT.isRecall()) {
+                        isHalted = true;
+                    }
                     if (returnValue != null) {
                         state.EXTERNAL_FUNCTION_CONTEXT = null;
                     }

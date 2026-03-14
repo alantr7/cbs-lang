@@ -158,6 +158,9 @@ public class ProgramExecutor {
                     if (returnValue != null) {
                         program.state.REGISTER_RAX.setValue((DataType) returnValue.getDataType(), returnValue.getValue());
                     }
+                    if (program.state.EXTERNAL_FUNCTION_CONTEXT.isRecall()) {
+                        program.halt();
+                    }
                 } catch (Exception e) {
                     program.interrupt(e);
                     return;
