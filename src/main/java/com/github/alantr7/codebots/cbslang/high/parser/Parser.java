@@ -38,6 +38,14 @@ public class Parser {
 
     AST parse() throws ParserException {
         Primitive.fix();
+
+        // import "auto-import" modules
+        for (Module module : moduleRepository.getModules()) {
+            if (module.isAutoImport()) {
+                ast.signatures.addAll(module.getFunctions().stream().map(ExternalFunction::createSignature).toList());
+            }
+        }
+
         while (!tokens.isEmpty()) {
             String nextToken = tokens.peek();
 
@@ -585,7 +593,15 @@ public class Parser {
             }
             tokens.advance();
 
-            FunctionSignature function = ast.signatures.stream().filter(s -> s.name.equals(functionName) && Objects.equals(moduleName, s.module)).findFirst().orElse(null);
+            FunctionSignature function = ast.signatures.stream().filter(s -> {
+                if (s.name.equals(functionName) && Objects.equals(moduleName, s.module))
+                    return true;
+
+                if (s.name.equals(functionName) && moduleRepository.getModule(s.module) != null && moduleRepository.getModule(s.module).isAutoImport())
+                    return true;
+
+                return false;
+            }).findFirst().orElse(null);
             if (function == null)
                 throw new ParserException("Unknown member '" + functionName + "'.");
 

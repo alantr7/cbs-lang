@@ -1,6 +1,7 @@
 package com.github.alantr7.codebots.cbslang.low.runtime.modules;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,6 +13,9 @@ public abstract class Module {
     private final String name;
 
     private final Map<String, ExternalFunction> handlers = new HashMap<>();
+
+    @Getter @Setter
+    private boolean autoImport;
 
     public Module(String name) {
         this.name = name;
