@@ -4,6 +4,7 @@ import com.github.alantr7.codebots.cbslang.low.runtime.memory.DataType;
 import com.github.alantr7.codebots.cbslang.low.runtime.memory.Data;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.Context;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;

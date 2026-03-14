@@ -454,7 +454,8 @@ public class CompilerTest {
         Program program = new Program(tokenized, repository);
         System.out.println(compiler.getOutput());
 
-        program.execute();
+        program.setMode(Program.RUN_UNTIL_HALT);
+        program.run();
         program.getState().dump();
 
         Files.writeString(new File("./output.txt").toPath(), compiler.getOutput());

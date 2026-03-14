@@ -141,6 +141,7 @@ public class Compiler {
         }
 
         builder.append("sub esp, ").append(loop.scope.getLocalVariables().size()).append("\n");
+        append("halt");
         builder.append("jmp loop_start").append(labelId).append("\n");
 
         // Label after the loop
@@ -164,6 +165,7 @@ public class Compiler {
         }
 
         builder.append("sub esp, ").append(loop.scope.getLocalVariables().size()).append("\n");
+        append("halt");
         builder.append("jmp loop_start").append(labelId).append("\n");
 
         // Label after the loop
@@ -201,6 +203,7 @@ public class Compiler {
         }
 
         builder.append("sub esp, ").append(loop.scope.getLocalVariables().size()).append("\n");
+        append("halt");
         builder.append("jmp loop_start").append(labelId).append("\n");
 
         // Label after the loop
@@ -210,7 +213,8 @@ public class Compiler {
     public void compileStatement(Statement statement) {
         if (statement instanceof Call call) {
             compileExpression(call);
-            builder.append("pop\n");
+            append("pop");
+            append("halt");
         }
 
         else if (statement instanceof While loop) {
@@ -241,6 +245,7 @@ public class Compiler {
         else if (statement instanceof Operand expression) {
             compileExpression(expression);
             append("pop");
+            append("halt");
         }
 
         else if (statement instanceof Ret ret) {
@@ -462,11 +467,6 @@ public class Compiler {
             builder.append("cat").append(" [esp-2], [esp-1]").append("\n");
             builder.append("pop").append("\n");
         }
-    }
-
-    public void compileVariableDeclare(Variable declare) {
-        builder.append("; Variable declare\n");
-        builder.append("add esp, ").append(declare.length).append("\n");
     }
 
     public void compileVariableDeclare(Declare declare) {

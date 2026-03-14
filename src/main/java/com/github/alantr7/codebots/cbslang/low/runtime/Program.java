@@ -6,6 +6,7 @@ import com.github.alantr7.codebots.cbslang.low.runtime.modules.ExternalFunction;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.Module;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.ModuleRepository;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,15 @@ public class Program {
 
     final Map<String, Object> extras = new HashMap<>();
 
+    public static final byte RUN_UNTIL_END = 0;
+
+    public static final byte RUN_UNTIL_HALT = 1;
+
+    @Getter @Setter
+    byte mode = RUN_UNTIL_END;
+
+    boolean isHalted;
+
     @Getter
     Exception error;
 
@@ -31,9 +41,14 @@ public class Program {
         this.instructions = instructions;
     }
 
-    public void execute() {
-        while ((int) state.REGISTER_EIP.getValue() < instructions.length)
+    public void run() {
+        while ((int) state.REGISTER_EIP.getValue() < instructions.length) {
             next();
+            if (mode == RUN_UNTIL_HALT && isHalted) {
+               break;
+            }
+        }
+        isHalted = false;
     }
 
     public boolean hasNext() {
@@ -72,7 +87,6 @@ public class Program {
             return;
 
         try {
-//            System.out.println(Arrays.toString(instruction));
             switch (command) {
                 case "defc" -> executor.handleDEFC(instruction);
                 case "impf" -> executor.handleIMPF(instruction);
@@ -105,6 +119,7 @@ public class Program {
                 case "cflti" -> executor.handleCFLTI(instruction);
                 case "ciflt" -> executor.handleCIFLT(instruction);
 
+                case "halt" -> halt();
                 case "dump" -> state.dump();
             }
         } catch (Exception e) {
@@ -122,6 +137,10 @@ public class Program {
     public void interrupt(Exception error) {
         this.error = error;
         state.REGISTER_EIP.setValue(DataType.INT, instructions.length);
+    }
+
+    public void halt() {
+        isHalted = true;
     }
 
     public Object getExtra(String key) {

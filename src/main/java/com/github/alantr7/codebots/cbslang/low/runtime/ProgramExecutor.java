@@ -250,4 +250,9 @@ public class ProgramExecutor {
         destination.setValue(DataType.STRING, current + sourceVal);
     }
 
+    void handleHALT(String[] instruction) {
+        assert instruction[0].equals("halt");
+        program.halt();
+    }
+
 }
