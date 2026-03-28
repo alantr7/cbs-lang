@@ -5,7 +5,6 @@ import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.*;
-import com.github.alantr7.codebots.cbslang.low.runtime.memory.DataType;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.ExternalFunction;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.Module;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.ModuleRepository;
@@ -212,6 +211,9 @@ public class Parser {
                     return parseDoWhile();
                 case "for":
                     return parseFor();
+                case "continue":
+                case "break":
+                    return parseLoopCommand();
                 case "return":
                     return parseReturn();
                 default:
@@ -331,8 +333,10 @@ public class Parser {
         ParserHelper.expect(tokens.next(), ")");
         ParserHelper.expect(tokens.next(), "{");
         Scope scope = context.nestScope(false, true);
+        context.loopScopes.push(scope);
         Statement[] body = parseBody();
         context.scopes.pop();
+        context.loopScopes.pop();
         ParserHelper.expect(tokens.next(), "}");
 
         return new While(condition, body, scope);
@@ -342,8 +346,10 @@ public class Parser {
         tokens.advance();
         ParserHelper.expect(tokens.next(), "{");
         Scope scope = context.nestScope(false, true);
+        context.loopScopes.push(scope);
         Statement[] body = parseBody();
         context.scopes.pop();
+        context.loopScopes.pop();
         ParserHelper.expect(tokens.next(), "}");
         ParserHelper.expect(tokens.next(), "while");
         ParserHelper.expect(tokens.next(), "(");
@@ -370,11 +376,29 @@ public class Parser {
         ParserHelper.expect(tokens.next(), ")");
         ParserHelper.expect(tokens.next(), "{");
         Scope scope = context.nestScope(false, true);
+        context.loopScopes.push(scope);
         Statement[] body = parseBody();
         ParserHelper.expect(tokens.next(), "}");
         context.scopes.pop();
+        context.loopScopes.pop();
 
         return new For((ForInitExpr) init, condition, update, body, scope);
+    }
+
+    LoopCmd parseLoopCommand() throws ParserException {
+        String cmd = tokens.next();
+
+        // count local variables
+        int variableCount = 0;
+        int index = context.scopes.indexOf(context.loopScopes.peek());
+        for (int i = index; i < context.scopes.size(); i++) {
+            variableCount += context.scopes.get(i).localVariables.size();
+        }
+
+        if (cmd.equals("continue")) {
+            return new LoopCmd(LoopCmd.CONTINUE, variableCount);
+        }
+        return new LoopCmd(LoopCmd.BREAK, variableCount);
     }
 
     Ret parseReturn() throws ParserException {

@@ -446,6 +446,23 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testContinue() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          import system;
+          int main() {
+            int i = 0-1;
+            do {
+              int b = 3;
+              if (i > 50) {
+                break;
+              }
+              continue;
+            } while (i++ < 100);
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();
@@ -454,7 +471,7 @@ public class CompilerTest {
         Program program = new Program(tokenized, repository);
         System.out.println(compiler.getOutput());
 
-        program.setMode(Program.RUN_UNTIL_HALT);
+        program.setMode(Program.RUN_UNTIL_END);
         program.run();
         program.getState().dump();
 

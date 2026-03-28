@@ -3,7 +3,9 @@ package com.github.alantr7.codebots.cbslang.high.parser;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Variable;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Scope {

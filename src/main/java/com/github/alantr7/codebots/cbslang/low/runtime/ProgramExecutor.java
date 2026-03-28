@@ -92,11 +92,10 @@ public class ProgramExecutor {
         Data left = program.state.locate(new String[] { instruction[1] });
         Data right = program.state.locate(new String[] { instruction[2] });
 
+        float rightVal = ((Number) right.getValue()).floatValue();
+        float leftVal = ((Number) left.getValue()).floatValue();
 
-        int rightVal = (int) right.getValue();
-        int leftVal = (int) left.getValue();
-
-        int diff = leftVal - rightVal;
+        float diff = leftVal - rightVal;
         program.state.REGISTER_CMP.setValue(DataType.INT, diff == 0 ? 0 : diff < 0 ? -1 : 1);
     }
 
