@@ -462,6 +462,17 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testNegativeInts() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          import system;
+          int main() {
+            int a = -3 * -2;
+            return a;
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();
