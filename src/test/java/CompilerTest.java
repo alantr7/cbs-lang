@@ -451,14 +451,13 @@ public class CompilerTest {
         compiler = new Compiler(Parser.parse(repository, """
           import system;
           int main() {
-            int i = 0-1;
-            do {
+            for (int i = 0; i < 100; i++) {
               int b = 3;
               if (i > 50) {
                 break;
               }
               continue;
-            } while (i++ < 100);
+            };
           }
           """));
     }
