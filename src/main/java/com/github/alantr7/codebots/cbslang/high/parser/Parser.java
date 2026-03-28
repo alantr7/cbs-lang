@@ -181,6 +181,11 @@ public class Parser {
             if (tokens.peek().equals("}"))
                 break;
 
+            if (tokens.peek().equals(";")) {
+                tokens.advance();
+                continue;
+            }
+
             Statement statement = parseStatement();
             if (statement == null)
                 break;
