@@ -185,7 +185,7 @@ public class Parser {
             if (statement == null)
                 break;
 
-            if (!(statement instanceof If) || (statement instanceof While wh && wh.isDoWhile))
+            if ((!(statement instanceof If) && !(statement instanceof For)) || (statement instanceof While wh && wh.isDoWhile))
                 ParserHelper.expect(tokens.next(), ";");
 
             body[statementCount] = statement;
