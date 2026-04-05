@@ -55,6 +55,7 @@ public class Program {
         return (int) state.REGISTER_EIP.getValue() < instructions.length;
     }
 
+    @SuppressWarnings("all")
     public void next() {
         if (state.EXTERNAL_FUNCTION_CONTEXT != null) {
             if (state.EXTERNAL_FUNCTION_CONTEXT.isRecall()) {
@@ -68,6 +69,7 @@ public class Program {
                         isHalted = true;
                     }
                     if (returnValue != null) {
+                        state.REGISTER_RAX.setValue((DataType) returnValue.getDataType(), returnValue.getValue());
                         state.EXTERNAL_FUNCTION_CONTEXT = null;
                     }
                 } catch (Exception e) {
