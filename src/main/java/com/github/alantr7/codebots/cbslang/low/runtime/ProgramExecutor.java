@@ -1,5 +1,6 @@
 package com.github.alantr7.codebots.cbslang.low.runtime;
 
+import com.github.alantr7.codebots.cbslang.exceptions.ExecutionException;
 import com.github.alantr7.codebots.cbslang.low.runtime.memory.Data;
 import com.github.alantr7.codebots.cbslang.low.runtime.memory.DataType;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.Context;
@@ -91,6 +92,18 @@ public class ProgramExecutor {
 
         Data left = program.state.locate(new String[] { instruction[1] });
         Data right = program.state.locate(new String[] { instruction[2] });
+
+        if (left.getDataType() == DataType.STRING || right.getDataType() == DataType.STRING) {
+            if (left.getDataType() == DataType.STRING && right.getDataType() != DataType.STRING) {
+                program.interrupt(new ExecutionException("Can not compare STRING and " + right.getDataType().getTypeName()));
+                return;
+            } else if (left.getDataType() != DataType.STRING && right.getDataType() == DataType.STRING) {
+                program.interrupt(new ExecutionException("Can not compare " + left.getDataType().getTypeName() + " and STRING"));
+                return;
+            }
+            program.state.REGISTER_CMP.setValue(DataType.INT, left.getValue().toString().equals(right.getValue().toString()) ? 0 : -1);
+            return;
+        }
 
         float rightVal = ((Number) right.getValue()).floatValue();
         float leftVal = ((Number) left.getValue()).floatValue();
