@@ -227,7 +227,7 @@ public class Compiler {
         // Label after the loop
         builder.append("loop_after").append(labelId).append(":\n");
         if (isInitDeclare) {
-            builder.append("sub esp, 1");
+            builder.append("sub esp, 1\n");
         }
     }
 
