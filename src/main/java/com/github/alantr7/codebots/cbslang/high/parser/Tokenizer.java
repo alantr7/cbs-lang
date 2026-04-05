@@ -21,8 +21,6 @@ public class Tokenizer {
 
             lines.add(tokenized);
             lineNumbers.add(i + 1);
-
-            System.out.println("['" + String.join("', '", tokenized) + "']");
         }
 
         return new TokenQueue(lines.toArray(String[][]::new), lineNumbers.toArray(Integer[]::new), constants.toArray(TokenQueue.Constant[]::new));

@@ -68,11 +68,6 @@ public class Parser {
 
         }
 
-        System.out.println("Scopes:");
-        for (Scope scope : context.scopes) {
-            System.out.println(scope);
-        }
-
         return ast;
     }
 
@@ -87,7 +82,6 @@ public class Parser {
 
         for (ExternalFunction fun : module.getFunctions()) {
             ast.signatures.add(fun.createSignature());
-            System.out.println("imported " + fun.getName());
         }
     }
 
