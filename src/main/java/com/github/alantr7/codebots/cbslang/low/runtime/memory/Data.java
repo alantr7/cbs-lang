@@ -25,6 +25,13 @@ public class Data {
         this.value = value;
     }
 
+    public void copyFrom(Data other) {
+        if (other != null) {
+            this.dataType = other.dataType;
+            this.value = other.value;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public <T> void updateValue(DataType<T> type, Function<T, T> updateFunction) {
         value = updateFunction.apply((T) value);

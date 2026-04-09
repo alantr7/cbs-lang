@@ -20,8 +20,8 @@ public class Program {
 
     final ProgramExecutor executor = new ProgramExecutor(this);
 
-    @Getter
-    final ProgramState state = new ProgramState();
+    @Getter @Setter
+    ProgramState state = new ProgramState();
 
     final Map<String, Object> extras = new HashMap<>();
 
