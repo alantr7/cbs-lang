@@ -15,6 +15,7 @@ public class Program {
 
     final ModuleRepository moduleRepository;
 
+    @Getter
     final String[][] instructions;
 
     final ProgramExecutor executor = new ProgramExecutor(this);
