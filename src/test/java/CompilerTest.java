@@ -488,7 +488,7 @@ public class CompilerTest {
         Files.writeString(new File("./output.txt").toPath(), compiler.getOutput());
 
         AtomicInteger idx = new AtomicInteger();
-        String memory = Arrays.stream(program.getState().getMEMORY()).map((data) -> {
+        String memory = Arrays.stream(program.getState().getMemory()).map((data) -> {
             if (data == null)
                 return idx.getAndIncrement() + "\t(empty)";
 

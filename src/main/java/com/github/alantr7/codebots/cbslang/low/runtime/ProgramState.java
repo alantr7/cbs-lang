@@ -28,7 +28,6 @@ public class ProgramState {
 
     final Data REGISTER_RAX = new Data();
 
-    @Getter
     final Data[] MEMORY = new Data[256];
 
     final List<Map.Entry<String, String>> IMPORTS = new LinkedList<>();
@@ -110,6 +109,10 @@ public class ProgramState {
 
     public @NotNull Data locate(int address) {
         return MEMORY[address] != null ? MEMORY[address] : (MEMORY[address] = new Data());
+    }
+
+    public Data[] getMemory() {
+        return MEMORY;
     }
 
     private Data getRegistry(String name) {
