@@ -463,6 +463,22 @@ public class CompilerTest {
     }
 
     @Test
+    public void testVariableCleanup5() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          import system;
+          int main() {
+            int j = 0;
+            while (j < 5) {
+                for (int i = 0; i < 3; i++) {
+                    system.print("j: " + j + " and " + i);
+                }
+                j++;
+            }
+          }
+          """));
+    }
+
+    @Test
     public void testNegativeInts() throws ParserException {
         compiler = new Compiler(Parser.parse(repository, """
           import system;

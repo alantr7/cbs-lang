@@ -102,7 +102,7 @@ public class Parser {
             return;
         }
         if (differentiator.equals("=") || differentiator.equals(";")) {
-            parseVariableDeclare(type, name);
+            parseVariableDeclare(type, name, false);
             return;
         }
     }
@@ -226,7 +226,7 @@ public class Parser {
         // variable declare
         Type parameterType = parseType(nextToken);
         if (parameterType != null) {
-            return parseVariableDeclare(parameterType, tokens.next());
+            return parseVariableDeclare(parameterType, tokens.next(), forInitExpr);
         }
 
         // variable assign
@@ -245,7 +245,7 @@ public class Parser {
         throw new ParserException("Can not use " + expression + " as a statement.");
     }
 
-    Declare parseVariableDeclare(Type type, String name) throws ParserException {
+    Declare parseVariableDeclare(Type type, String name, boolean isForInit) throws ParserException {
         Operand initialValue;
         // no assignment
         if (tokens.peek().equals(";")) {
@@ -272,7 +272,9 @@ public class Parser {
 
         Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset++, 1);
         context.getCurrentScope().variables.put(name, variable);
-        context.getCurrentScope().localVariables.put(name, variable);
+        if (!isForInit) {
+            context.getCurrentScope().localVariables.put(name, variable);
+        }
         return new Declare(type, initialValue, new int[] { 1 });
     }
 
