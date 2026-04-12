@@ -180,13 +180,7 @@ public class ProgramState {
             return;
         }
 
-        buffer.writeU1(data.getDataType().getSerializationId());
-        switch (data.getDataType().getSerializationId()) {
-            case 1 -> buffer.writeInt(data.getValueAs(DataType.INT));
-            case 2 -> buffer.writeLong(data.getValueAs(DataType.LONG));
-            case 3 -> buffer.writeInt(Float.floatToIntBits(data.getValueAs(DataType.FLOAT)));
-            case 4 -> buffer.writeString(data.getValueAs(DataType.STRING));
-        }
+        data.serialize(buffer);
     }
 
     public static ProgramState deserialize(Program program, ByteArrayReader buffer) {
@@ -199,17 +193,17 @@ public class ProgramState {
         }
 
         // Load registers
-        state.REGISTER_EIP.copyFrom(deserializeData(buffer));
-        state.REGISTER_ESP.copyFrom(deserializeData(buffer));
-        state.REGISTER_EBP.copyFrom(deserializeData(buffer));
-        state.REGISTER_EAX.copyFrom(deserializeData(buffer));
-        state.REGISTER_EBX.copyFrom(deserializeData(buffer));
-        state.REGISTER_CMP.copyFrom(deserializeData(buffer));
-        state.REGISTER_RAX.copyFrom(deserializeData(buffer));
+        state.REGISTER_EIP.copyFrom(Data.deserialize(buffer));
+        state.REGISTER_ESP.copyFrom(Data.deserialize(buffer));
+        state.REGISTER_EBP.copyFrom(Data.deserialize(buffer));
+        state.REGISTER_EAX.copyFrom(Data.deserialize(buffer));
+        state.REGISTER_EBX.copyFrom(Data.deserialize(buffer));
+        state.REGISTER_CMP.copyFrom(Data.deserialize(buffer));
+        state.REGISTER_RAX.copyFrom(Data.deserialize(buffer));
 
         // Load memory
         for (int i = 0; i < state.MEMORY.length; i++) {
-            Data data = deserializeData(buffer);
+            Data data = Data.deserialize(buffer);
             if (data != null) {
                 state.MEMORY[i] = data;
             }
@@ -222,12 +216,12 @@ public class ProgramState {
             int argumentCount = buffer.readU1();
             Data[] arguments = new Data[argumentCount];
             for (int i = 0; i < argumentCount; i++) {
-                arguments[i] = deserializeData(buffer);
+                arguments[i] = Data.deserialize(buffer);
             }
 
             Context context = new Context(program, arguments);
             for (int i = 0; i < 8; i++) {
-                Data data = deserializeData(buffer);
+                Data data = Data.deserialize(buffer);
                 context.getMemory()[i] = data;
             }
 
@@ -236,17 +230,6 @@ public class ProgramState {
         }
 
         return state;
-    }
-
-    private static Data deserializeData(ByteArrayReader buffer) {
-        int id = buffer.readU1();
-        return switch (id) {
-            case 1 -> new Data(DataType.INT, buffer.readInt());
-            case 2 -> new Data(DataType.LONG, buffer.readLong());
-            case 3 -> new Data(DataType.FLOAT, Float.intBitsToFloat(buffer.readInt()));
-            case 4 -> new Data(DataType.STRING, buffer.readString());
-            default -> null;
-        };
     }
 
 }
