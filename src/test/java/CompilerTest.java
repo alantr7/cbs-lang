@@ -494,10 +494,11 @@ public class CompilerTest {
         compiler = new Compiler(Parser.parse(repository, """
           import system;
           int main() {
-            int array[3][2];
-            array[0][0] = 3;
+            int array[2][2];
+            array[1][0] = 3;
+            int test = 176;
             
-            system.print(array);
+            system.print(array[1][2]);
           }
           """));
     }

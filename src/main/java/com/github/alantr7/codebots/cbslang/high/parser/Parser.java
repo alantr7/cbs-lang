@@ -701,6 +701,23 @@ public class Parser {
         }
         else {
             Variable variable = context.getCurrentScope().variables.get(nextToken);
+            Operand[] access = new Operand[8];
+            byte dimensionCount = 0;
+
+            // Array access
+            if (tokens.peek().equals("[")) {
+                while (tokens.peek().equals("[")) {
+                    tokens.advance();
+                    Operand expression = parseExpression();
+                    if (expression.getResultType() != Primitive.INT) {
+                        throw new ParserException("Not an integer!");
+                    }
+
+                    access[dimensionCount++] = expression;
+                    expect(tokens.next(), "]");
+                }
+            }
+
             if (prefix == 0) {
                 if (tokens.peek().equals("++")) {
                     // is postfix
@@ -713,11 +730,14 @@ public class Parser {
                 }
             }
 
+            Operand[] accessOperands = new Operand[dimensionCount];
+            System.arraycopy(access, 0, accessOperands, 0, dimensionCount);
+
             if (variable != null) {
                 if ((prefix | postfix) != 0) {
-                    return new Unary(new Access(variable, new Operand[0]), (byte) (prefix | postfix));
+                    return new Unary(new Access(variable, accessOperands), (byte) (prefix | postfix));
                 }
-                return new Access(variable, new Operand[0]);
+                return new Access(variable, accessOperands);
             }
         }
 
