@@ -515,6 +515,22 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testArrayCleanup() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          import system;
+          
+          int main() {
+            if (1) {
+                int matrix[5][5];
+            } else {
+                int a = 3;
+            }
+            return 0;
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();

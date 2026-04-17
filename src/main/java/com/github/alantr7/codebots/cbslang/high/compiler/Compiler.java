@@ -108,10 +108,10 @@ public class Compiler {
         for (Statement stmt : ifs.body) {
             compileStatement(stmt);
         }
+        builder.append("sub esp, ").append(ifs.scope.getMemoryUse()).append("\n"); // this was after "if_after_body"
         builder.append("jmp if_after").append(resultId).append("\n");
 
         builder.append("if_after_body").append(labelId).append(":\n");
-        builder.append("sub esp, ").append(ifs.scope.getLocalVariables().size()).append("\n");
 
         // Elses
         if (ifs.elseStmt != null) {
@@ -144,7 +144,7 @@ public class Compiler {
 
         context.loopStack.pop();
 
-        builder.append("sub esp, ").append(loop.scope.getLocalVariables().size()).append("\n");
+        builder.append("sub esp, ").append(loop.scope.getMemoryUse()).append("\n");
         append("halt");
         builder.append("jmp loop_start").append(labelId).append("\n");
 
@@ -171,7 +171,7 @@ public class Compiler {
 
         context.loopStack.pop();
 
-        builder.append("sub esp, ").append(loop.scope.getLocalVariables().size()).append("\n");
+        builder.append("sub esp, ").append(loop.scope.getMemoryUse()).append("\n");
         append("halt");
         builder.append("jmp loop_start").append(labelId).append("\n");
 
@@ -211,7 +211,7 @@ public class Compiler {
         context.loopStack.pop();
 
         // Remove local variables from memory
-        builder.append("sub esp, ").append(loop.scope.getLocalVariables().size()).append("\n");
+        builder.append("sub esp, ").append(loop.scope.getMemoryUse()).append("\n");
 
         // Update
         builder.append("loop_update").append(labelId).append(":\n");
