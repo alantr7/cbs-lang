@@ -318,7 +318,8 @@ public class Parser {
         int[] lengths = new int[dimensionCount];
         System.arraycopy(dimensions, 0, lengths, 0, dimensionCount);
 
-        Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset++, lengths);
+        Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset, lengths);
+        context.getCurrentScope().nextVariableOffset += length;
         context.getCurrentScope().variables.put(name, variable);
         if (!isForInit) {
             context.getCurrentScope().localVariables.put(name, variable);

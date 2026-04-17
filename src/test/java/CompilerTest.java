@@ -494,11 +494,23 @@ public class CompilerTest {
         compiler = new Compiler(Parser.parse(repository, """
           import system;
           int main() {
-            int array[2][2];
-            array[1][0] = 3;
-            int test = 176;
+            int matrix[5][5];
+            int m = 5;
+            int n = 3;
             
-            system.print(array[1][2]);
+            int i = 0;
+            while (i < m) {
+                matrix[i][i] = 3;
+                i++;
+            }
+            
+            matrix[2][1] = 86;
+            
+            for (int j = 0; j < m; j++) {
+                for (int k = 0; k < n; k++) {
+                    system.print("[" + j + ":j; " + k + "]: " + matrix[j][k]);
+                }
+            }
           }
           """));
     }

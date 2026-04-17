@@ -366,7 +366,7 @@ public class Compiler {
             compileExpression(assign.value);
 
             // Compiles indices and saves them on stack
-            for (int i = 0; i < assign.indices.length; i++) {
+            for (int i = assign.indices.length - 1; i >= 0; i--) {
                 builder.append("; Index ").append(i).append("\n");
                 compileExpression(assign.indices[i]);
             }
@@ -389,7 +389,7 @@ public class Compiler {
             builder.append("; Variable access\n");
 
             // Compiles indices and saves them on stack
-            for (int i = 0; i < access.indices.length; i++) {
+            for (int i = access.indices.length - 1; i >= 0; i--) {
                 builder.append("; Index ").append(i).append("\n");
                 compileExpression(access.indices[i]);
             }
@@ -503,7 +503,22 @@ public class Compiler {
         builder.append("; Variable declare\n");
         int sum = declare.length;
 
-        if (declare.value != null) {
+        // generate array members
+        if (declare.length != 1) {
+            String toPush;
+            if (declare.type == Primitive.INT)
+                toPush = "0";
+            else toPush = null;
+
+            if (toPush != null) {
+                for (int i = 0; i < declare.length; i++) {
+                    append("push " + toPush);
+                }
+            } else {
+                append("add esp, " + sum);
+            }
+        }
+        else if (declare.value != null) {
             compileExpression(declare.value);
             // todo: don't i need to pop here?
         } else {

@@ -45,13 +45,13 @@ public class SystemModule extends Module {
     }
 
     public Data print(Context context) {
-        System.out.println();
-        System.out.println("Print called!");
-        System.out.println("My arguments:");
+//        System.out.println();
+//        System.out.println("Print called!");
+//        System.out.println("My arguments:");
         for (Data argument : context.getArguments()) {
-            System.out.println(" -> " + argument.getDataType().getTypeName() + " " + argument.getValue());
+            System.out.println(argument.getValue());
         }
-        System.out.println();
+//        System.out.println();
         return null;
     }
 
