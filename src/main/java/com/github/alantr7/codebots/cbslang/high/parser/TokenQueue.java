@@ -3,6 +3,8 @@ package com.github.alantr7.codebots.cbslang.high.parser;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Type;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 public class TokenQueue {
 
     private final String[][] queue;
@@ -23,6 +25,8 @@ public class TokenQueue {
 
         if (queue[0].length == 0)
             advance();
+
+        System.out.println(String.join("\n", Arrays.stream(queue).map(Arrays::toString).toArray(String[]::new)));
     }
 
     public String peek() {

@@ -11,12 +11,12 @@ public class Declare implements Statement, ForInitExpr {
     @Nullable
     public Operand value;
 
-    public int[] lengths;
+    public int length;
 
-    public Declare(Type type, @Nullable Operand value, int[] lengths) {
+    public Declare(Type type, @Nullable Operand value, int length) {
         this.type = type;
         this.value = value;
-        this.lengths = lengths;
+        this.length = length;
     }
 
 }

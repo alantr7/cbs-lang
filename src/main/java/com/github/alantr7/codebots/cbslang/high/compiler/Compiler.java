@@ -501,9 +501,7 @@ public class Compiler {
 
     public void compileVariableDeclare(Declare declare) {
         builder.append("; Variable declare\n");
-        int sum = 0;
-        for (int len : declare.lengths)
-            sum += len;
+        int sum = declare.length;
 
         if (declare.value != null) {
             compileExpression(declare.value);

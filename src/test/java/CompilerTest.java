@@ -489,6 +489,19 @@ public class CompilerTest {
           """));
     }
 
+    @Test
+    public void testDeclareArray() throws ParserException {
+        compiler = new Compiler(Parser.parse(repository, """
+          int input(int array[8]) {
+          
+          }
+          
+          int main() {
+            int array[3][3];
+          }
+          """));
+    }
+
     @After
     public void showResults() throws Exception {
         compiler.experimentalCompile();
