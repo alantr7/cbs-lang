@@ -492,12 +492,12 @@ public class CompilerTest {
     @Test
     public void testDeclareArray() throws ParserException {
         compiler = new Compiler(Parser.parse(repository, """
-          int input(int array[8]) {
-          
-          }
-          
+          import system;
           int main() {
-            int array[3][3];
+            int array[3][2];
+            array[0][0] = 3;
+            
+            system.print(array);
           }
           """));
     }

@@ -231,11 +231,29 @@ public class Parser {
             return parseVariableDeclare(parameterType, tokens.next(), forInitExpr);
         }
 
+        // array access
+        Operand[] access = new Operand[8];
+        byte dimensionCount = 0;
+        if (tokens.peek().equals("[")) {
+            while (tokens.peek().equals("[")) {
+                tokens.advance();
+                Operand expression = parseExpression();
+                if (expression.getResultType() != Primitive.INT) {
+                    throw new ParserException("Not an integer!");
+                }
+
+                access[dimensionCount++] = expression;
+                expect(tokens.next(), "]");
+            }
+        }
+
         // variable assign
         if (tokens.peek().equals("=")) {
             tokens.advance();
 
-            return parseVariableAssign(nextToken);
+            Operand[] accessTrimmed = new Operand[dimensionCount];
+            System.arraycopy(access, 0, accessTrimmed, 0, dimensionCount);
+            return parseVariableAssign(accessTrimmed, nextToken);
         }
 
         tokens.rollback();
@@ -250,10 +268,14 @@ public class Parser {
     Declare parseVariableDeclare(Type type, String name, boolean isForInit) throws ParserException {
         Operand initialValue;
         int length = 1;
+        int[] dimensions = new int[8];
+        byte dimensionCount = 0;
 
         // no assignment
         if (tokens.peek().equals(";")) {
             initialValue = null;
+            dimensions[0] = length;
+            dimensionCount = 1;
         }
         // array
         else if (tokens.peek().equals("[")) {
@@ -267,6 +289,7 @@ public class Parser {
                 }
 
                 length *= (int) literal.value;
+                dimensions[dimensionCount++] = (int) literal.value;
                 expect(tokens.next(), "]");
             }
             initialValue = null;
@@ -282,6 +305,9 @@ public class Parser {
                 else
                     throw new ParserException("Type mismatch: can not convert '" + initialValue.getResultType() + "' to '" + type + "'.");
             }
+
+            dimensions[0] = length;
+            dimensionCount = 1;
         }
         else return null;
 
@@ -289,8 +315,10 @@ public class Parser {
             throw new ParserException("Variable with name '" + name + "' already exists in this scope.");
         }
 
+        int[] lengths = new int[dimensionCount];
+        System.arraycopy(dimensions, 0, lengths, 0, dimensionCount);
 
-        Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset++, length);
+        Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset++, lengths);
         context.getCurrentScope().variables.put(name, variable);
         if (!isForInit) {
             context.getCurrentScope().localVariables.put(name, variable);
@@ -298,7 +326,7 @@ public class Parser {
         return new Declare(type, initialValue, length);
     }
 
-    Assign parseVariableAssign(String name) throws ParserException {
+    Assign parseVariableAssign(Operand[] access, String name) throws ParserException {
         Operand value = parseExpression();
         Variable variable = context.getCurrentScope().variables.get(name);
 
@@ -308,7 +336,7 @@ public class Parser {
         if (variable.type != value.getResultType())
             throw new ParserException("Type mismatch: can not convert '" + value.getResultType() + "' to '" + variable.type + "'.");
 
-        return new Assign(variable, new Operand[0], value);
+        return new Assign(variable, access, value);
     }
 
     If parseIf() throws ParserException {
