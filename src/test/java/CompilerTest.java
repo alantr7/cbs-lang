@@ -521,10 +521,9 @@ public class CompilerTest {
           import system;
           
           int main() {
-            if (1) {
+            while (1) {
                 int matrix[5][5];
-            } else {
-                int a = 3;
+                break;
             }
             return 0;
           }

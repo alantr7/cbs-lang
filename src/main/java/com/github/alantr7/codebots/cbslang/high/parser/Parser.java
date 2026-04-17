@@ -442,7 +442,7 @@ public class Parser {
         int variableCount = 0;
         int index = context.scopes.indexOf(context.loopScopes.peek());
         for (int i = index; i < context.scopes.size(); i++) {
-            variableCount += context.scopes.get(i).localVariables.size();
+            variableCount += context.scopes.get(i).getMemoryUse();
         }
 
         if (cmd.equals("continue")) {
