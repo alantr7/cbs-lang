@@ -1,5 +1,6 @@
 import com.github.alantr7.codebots.cbslang.exceptions.ParserException;
 import com.github.alantr7.codebots.cbslang.high.compiler.Compiler;
+import com.github.alantr7.codebots.cbslang.high.compiler.HumanReadableCompiler;
 import com.github.alantr7.codebots.cbslang.high.parser.Parser;
 import com.github.alantr7.codebots.cbslang.low.runtime.Program;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.ModuleRepository;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class CompilerTest {
 
-    Compiler compiler;
+    String compilerOutput;
 
     ModuleRepository repository = new ModuleRepository();
 
@@ -28,41 +29,41 @@ public class CompilerTest {
 
     @Test
     public void testEmptyFunction() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {}
-          """));
+          """);
     }
 
     @Test
     public void testFunctionParameters() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int add(int a, int b) {}
           int sub(int a, int b) {}
-          """));
+          """);
     }
 
     @Test
     public void testFunctionWithVariableDeclare() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int add(int a, int b) {
             int c;
             int d;
           }
-          """));
+          """);
     }
 
     @Test
     public void testFunctionWithSimpleExpression() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int add(int a, int b) {
             2+(5+5)*2;
           }
-          """));
+          """);
     }
 
     @Test
     public void testFunctionWithVariableAssign() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {
             int a;
             int b;
@@ -74,36 +75,36 @@ public class CompilerTest {
             
             return a + b * c;
           }
-          """));
+          """);
     }
 
     @Test
     public void testFunctionWithReturn() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main(int a) {
             return 5;
             a = 3;
             int b;
             b= 2;
           }
-          """));
+          """);
     }
 
     @Test
     public void testFunctionWithExpressionAccessingAVariable() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {
             int a = 5;
             int b = a;
             
             return b * 3;
           }
-          """));
+          """);
     }
 
     @Test
     public void testFunctionWithExpressionCallingParameterlessFunction() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int get_num2() {
             return 5;
           }
@@ -115,12 +116,12 @@ public class CompilerTest {
           int main() {
             return get_num() * 2;
           }
-          """));
+          """);
     }
 
     @Test
     public void testFunctionWithExpressionCallingFunctionWithParameters() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int add(int a, int b) {
             return a + b;
           }
@@ -129,34 +130,34 @@ public class CompilerTest {
             int c = add(add(5, 2) * add(2, add(1, 2)), add(7, 7) / add(1, 1));
             return c;
           }
-          """));
+          """);
     }
 
     @Test
     public void testFunctionWithLogicalExpressions() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int calc() {
             return 10 * (2 + (7 - 3) * 2 - 7);
           }
           int main() {
             return (0 && calc()) || calc();
           }
-          """));
+          """);
     }
 
     @Test
     public void testFunctionWithComparisonExpressions() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {
             int a = 3;
             return a < 5;
           }
-          """));
+          """);
     }
 
     @Test
     public void testFunctionWithIf() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {
             int a = 3;
             if (a < 5) {
@@ -164,12 +165,12 @@ public class CompilerTest {
             }
             return 56;
           }
-          """));
+          """);
     }
 
     @Test
     public void testFunctionWithIfElseIf() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {
             int a = 3;
             if (a > 5) {
@@ -180,12 +181,12 @@ public class CompilerTest {
               return a;
             }
           }
-          """));
+          """);
     }
 
     @Test
     public void testFactorial() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int fact(int num) {
             if (num <= 1) {
               return 1;
@@ -196,12 +197,12 @@ public class CompilerTest {
           int main() {
             return fact(5);
           }
-          """));
+          """);
     }
 
     @Test
     public void testVariableCleanup() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int test(int e) {
             int a = 3;
             int b = 5;
@@ -213,12 +214,12 @@ public class CompilerTest {
           int main() {
             return test(test(test(12)));
           }
-          """));
+          """);
     }
 
     @Test
     public void testWhileLoop() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {
             int i = 0;
             while (1) {
@@ -230,12 +231,12 @@ public class CompilerTest {
             }
             return i;
           }
-          """));
+          """);
     }
 
     @Test
     public void testDoWhileLoop() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {
             int i = 0;
             do {
@@ -243,12 +244,12 @@ public class CompilerTest {
             } while (i < 5);
             return i;
           }
-          """));
+          """);
     }
 
     @Test
     public void testForLoop() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {
             int a = 0;
             for (int i = 0; i < 10; i++) {
@@ -256,35 +257,35 @@ public class CompilerTest {
             };
             return a;
           }
-          """));
+          """);
     }
 
     @Test
     public void testAssignAsExpression() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {
             int a;
             int b = (a = 3);
             
             return b;
           }
-          """));
+          """);
     }
 
     @Test
     public void testUnaryOperators() throws ParserException {
-        compiler = new Compiler(Parser.parse("""
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {
             int a = 1;
             int b = ++a;
             return b;
           }
-          """));
+          """);
     }
 
     @Test
     public void testImport() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           
           int main() {
@@ -296,12 +297,12 @@ public class CompilerTest {
             
             return rand;
           }
-          """));
+          """);
     }
 
     @Test
     public void testString() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           
           string hey() {
@@ -312,12 +313,12 @@ public class CompilerTest {
             string name = "Alan";
             return hey() + name;
           }
-          """));
+          """);
     }
 
     @Test
     public void testEbpIncorrections1() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int get_num() {
             return 4;
           }
@@ -327,12 +328,12 @@ public class CompilerTest {
             int c = 2;
             return (a * get_num()) / c;
           }
-          """));
+          """);
     }
 
     @Test
     public void testEbpIncorrections2() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int square(int num) {
             return num * num;
           }
@@ -341,12 +342,12 @@ public class CompilerTest {
             int a = square(25);
             return a;
           }
-          """));
+          """);
     }
 
     @Test
     public void testEbpIncorrections3() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           int inner(int x) {
               int y = x + 1;
@@ -363,12 +364,12 @@ public class CompilerTest {
           int main() {
               return outer(5);
           }
-          """));
+          """);
     }
 
     @Test
     public void testStrings() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           string get_name() {
             return "Alan";
           }
@@ -376,12 +377,12 @@ public class CompilerTest {
             string greet = "Hello " + get_name() + "!";
             return greet;
           }
-          """));
+          """);
     }
 
     @Test
     public void externalFunctionBetterTest() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           
           int fact(int n) {
@@ -401,22 +402,22 @@ public class CompilerTest {
              system.print("It is: " + fact + "! Heh.");
              return 0;
           }
-          """));
+          """);
     }
 
     @Test
     public void testTypeCheck() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           int main() {
             float a = 3;
             return (int) a;
           }
-          """));
+          """);
     }
 
     @Test
     public void testScopeVariableCleanup() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           int main() {
             int i = 0;
@@ -431,24 +432,24 @@ public class CompilerTest {
             int a = 5;
             return a;
           }
-          """));
+          """);
     }
 
     @Test
     public void testFloats() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           int main() {
             float pi = 3.14;
             float e = 2.71;
             system.print(pi + " + " + e + " = " + (pi + e));
           }
-          """));
+          """);
     }
 
     @Test
     public void testContinue() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           int main() {
             for (int i = 0; i < 100; i++) {
@@ -459,12 +460,12 @@ public class CompilerTest {
               continue;
             };
           }
-          """));
+          """);
     }
 
     @Test
     public void testVariableCleanup5() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           int main() {
             int j = 0;
@@ -475,35 +476,35 @@ public class CompilerTest {
                 j++;
             }
           }
-          """));
+          """);
     }
 
     @Test
     public void testNegativeInts() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           int main() {
             int a = -3 * -2;
             return a;
           }
-          """));
+          """);
     }
 
     @Test
     public void testArrays() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           
           int main() {
             int matrix[5][5];
-            return matrix;
+            return matrix[1][1];
           }
-          """));
+          """);
     }
 
     @Test
     public void testArrayCleanup() throws ParserException {
-        compiler = new Compiler(Parser.parse(repository, """
+        compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           
           int main() {
@@ -513,22 +514,20 @@ public class CompilerTest {
             }
             return 0;
           }
-          """));
+          """);
     }
 
     @After
     public void showResults() throws Exception {
-        compiler.experimentalCompile();
-
-        String[][] tokenized = Tokenizer.tokenize(compiler.getOutput());
+        String[][] tokenized = Tokenizer.tokenize(compilerOutput);
         Program program = new Program(tokenized, repository);
-        System.out.println(compiler.getOutput());
+        System.out.println(compilerOutput);
 
         program.setMode(Program.RUN_UNTIL_END);
         program.run();
         program.getState().dump();
 
-        Files.writeString(new File("./output.txt").toPath(), compiler.getOutput());
+        Files.writeString(new File("./output.txt").toPath(), compilerOutput);
 
         AtomicInteger idx = new AtomicInteger();
         String memory = Arrays.stream(program.getState().getMemory()).map((data) -> {
