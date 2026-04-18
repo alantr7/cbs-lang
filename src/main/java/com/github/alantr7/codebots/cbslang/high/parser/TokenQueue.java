@@ -43,6 +43,15 @@ public class TokenQueue {
         return token;
     }
 
+    public long createRollbackPosition() {
+        return ((long) row << 32) | (col & 0xffffffffL);
+    }
+
+    public void rollback(long position) {
+        row = (int) (position >> 32);
+        col = (int) (position & 0xffffffffL);
+    }
+
     public void rollback() {
         col--;
 
