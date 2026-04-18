@@ -719,7 +719,7 @@ public class Parser {
                 dimensionCount = 1;
             }
 
-            if (variable.lengths.length != dimensionCount) {
+            if (variable != null && variable.lengths.length != dimensionCount) {
                 throw new ParserException("Array access must specify all array dimensions.");
             }
 
