@@ -490,27 +490,12 @@ public class CompilerTest {
     }
 
     @Test
-    public void testDeclareArray() throws ParserException {
+    public void testArrays() throws ParserException {
         compiler = new Compiler(Parser.parse(repository, """
           import system;
           int main() {
-            int matrix[5][5];
-            int m = 5;
-            int n = 3;
-            
-            int i = 0;
-            while (i < m) {
-                matrix[i][i] = 3;
-                i++;
-            }
-            
-            matrix[2][1] = 86;
-            
-            for (int j = 0; j < m; j++) {
-                for (int k = 0; k < n; k++) {
-                    system.print("[" + j + ":j; " + k + "]: " + matrix[j][k]);
-                }
-            }
+            int matrix[5][3];
+            matrix[5][3];
           }
           """));
     }

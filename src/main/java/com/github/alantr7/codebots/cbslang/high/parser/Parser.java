@@ -222,7 +222,7 @@ public class Parser {
             }
         }
 
-        // todo: ifs, else-ifs, loops, etc.
+        long rollbackPos = tokens.createRollbackPosition();
         tokens.advance();
 
         // variable declare
@@ -238,7 +238,7 @@ public class Parser {
             while (tokens.peek().equals("[")) {
                 tokens.advance();
                 Operand expression = parseExpression();
-                if (expression.getResultType() != Primitive.INT) {
+                if (expression == null || expression.getResultType() != Primitive.INT) {
                     throw new ParserException("Not an integer!");
                 }
 
@@ -256,7 +256,7 @@ public class Parser {
             return parseVariableAssign(accessTrimmed, nextToken);
         }
 
-        tokens.rollback();
+        tokens.rollback(rollbackPos);
 
         Operand expression = parseExpression();
         if (expression instanceof Statement stmt)
@@ -473,9 +473,7 @@ public class Parser {
         int parenthesisOpen = 0;
 
         while (!tokens.isEmpty()) {
-            var next = tokens.peek();
-
-            tokens.advance();
+            var next = tokens.next();
 
             if (expectsOperator && !ParserHelper.isOperator(next)) {
                 tokens.rollback();
@@ -628,7 +626,7 @@ public class Parser {
             }
         }
 
-        return postfix.getFirst();
+        return postfix.isEmpty() ? null : postfix.getFirst();
     }
 
     Operand parseVariableAccessOrCall() throws ParserException {
@@ -717,6 +715,12 @@ public class Parser {
                     access[dimensionCount++] = expression;
                     expect(tokens.next(), "]");
                 }
+            } else {
+                dimensionCount = 1;
+            }
+
+            if (variable.lengths.length != dimensionCount) {
+                throw new ParserException("Array access must specify all array dimensions.");
             }
 
             if (prefix == 0) {
