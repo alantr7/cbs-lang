@@ -493,9 +493,10 @@ public class CompilerTest {
     public void testArrays() throws ParserException {
         compiler = new Compiler(Parser.parse(repository, """
           import system;
+          
           int main() {
-            int matrix[5][3];
-            matrix[5][3];
+            int matrix[5][5];
+            return matrix;
           }
           """));
     }
