@@ -537,10 +537,12 @@ public class CompilerTest {
         compilerOutput = Compiler.toHumanReadable(repository, """
           import system;
           
+          // ignore this
+          
           int main() {
             for (int i = 0; i < 10; i++){
                 for (int j = 0; j < 5; j++){
-                    system.print(i + ", " + j);
+                    system.print(i + ", " + j); // and this
                 }
             }
           }

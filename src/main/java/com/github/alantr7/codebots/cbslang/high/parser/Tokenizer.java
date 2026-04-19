@@ -15,6 +15,9 @@ public class Tokenizer {
 
         for (int i = 0; i < input.length; i++) {
             var line = input[i];
+            if (line.startsWith("//"))
+                continue;
+
             var tokenized = tokenizeLine(line, constants);
             if (tokenized.length == 0)
                 continue;
@@ -81,6 +84,13 @@ public class Tokenizer {
                         token = "(" + cast + ")";
                         tokens.removeLast();
                     }
+                }
+
+                // check if it's a comment
+                else if (character == '/' && "/".equals(tokens.peekLast())) {
+                    tokens.removeLast();
+                    start = line.length();
+                    break;
                 }
 
                 if (token == null) {
