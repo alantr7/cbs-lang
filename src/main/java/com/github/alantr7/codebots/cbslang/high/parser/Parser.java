@@ -318,7 +318,8 @@ public class Parser {
         }
         else return null;
 
-        if (context.getCurrentScope().localVariables.containsKey(name)) {
+        if ((context.scopes.size() == 1 && context.getCurrentScope().localVariables.containsKey(name)) ||
+          (context.scopes.size() > 1 && context.getCurrentScope().variables.containsKey(name) && !context.getCurrentScope().variables.get(name).global)) {
             throw new ParserException("Variable with name '" + name + "' already exists in this scope.");
         }
 
@@ -421,8 +422,12 @@ public class Parser {
         tokens.advance();
         expect(tokens.next(), "(");
 
-        // todo: parse ForInitExpr
+        context.nestScope(false, true);
+
         Statement init = tokens.peek().equals(";") ? null : parseStatement(true);
+        if (init instanceof Declare) {
+            context.getCurrentScope().nextVariableOffset--;
+        }
 
         expect(tokens.next(), ";");
 
@@ -434,9 +439,13 @@ public class Parser {
         expect(tokens.next(), ")");
         expect(tokens.next(), "{");
         Scope scope = context.nestScope(false, true);
+        if (init instanceof Declare) {
+            scope.nextVariableOffset++;
+        }
         context.loopScopes.push(scope);
         Statement[] body = parseBody();
         expect(tokens.next(), "}");
+        context.scopes.pop();
         context.scopes.pop();
         context.loopScopes.pop();
 

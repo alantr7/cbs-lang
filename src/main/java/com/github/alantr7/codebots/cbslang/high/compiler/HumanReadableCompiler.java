@@ -187,7 +187,7 @@ public class HumanReadableCompiler extends Compiler<String> {
                 compileExpression(expr);
                 append("pop");
             } else if (loop.init instanceof Declare declare) {
-                compileVariableDeclare(declare);
+                compileVariableDeclare(declare); // this shit moves the variableOffset
                 isInitDeclare = true;
             }
         }

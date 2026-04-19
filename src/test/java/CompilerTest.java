@@ -532,6 +532,21 @@ public class CompilerTest {
           """);
     }
 
+    @Test
+    public void testForLoopCleanup() throws ParserException {
+        compilerOutput = Compiler.toHumanReadable(repository, """
+          import system;
+          
+          int main() {
+            for (int i = 0; i < 10; i++){
+                for (int j = 0; j < 5; j++){
+                    system.print("i" + i + "j" + j);
+                }
+            }
+          }
+          """);
+    }
+
     @After
     public void showResults() throws Exception {
         String[][] tokenized = Tokenizer.tokenize(compilerOutput);
