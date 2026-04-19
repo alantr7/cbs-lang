@@ -734,7 +734,7 @@ public class Parser {
                     expect(tokens.next(), "]");
                 }
                 isArrayAccess = true;
-            }
+            } else isArrayAccess = variable != null && variable.length > 1;
 
             if (variable != null && isArrayAccess && variable.lengths.length != dimensionCount) {
                 throw new ParserException("Array access must specify all array dimensions.");
