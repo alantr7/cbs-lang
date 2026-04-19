@@ -702,6 +702,7 @@ public class Parser {
             Variable variable = context.getCurrentScope().variables.get(nextToken);
             Operand[] access = new Operand[8];
             byte dimensionCount = 0;
+            boolean isArrayAccess = false;
 
             // Array access
             if (tokens.peek().equals("[")) {
@@ -715,11 +716,10 @@ public class Parser {
                     access[dimensionCount++] = expression;
                     expect(tokens.next(), "]");
                 }
-            } else {
-                dimensionCount = 1;
+                isArrayAccess = true;
             }
 
-            if (variable != null && variable.lengths.length != dimensionCount) {
+            if (variable != null && isArrayAccess && variable.lengths.length != dimensionCount) {
                 throw new ParserException("Array access must specify all array dimensions.");
             }
 
