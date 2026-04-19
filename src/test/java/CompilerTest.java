@@ -517,6 +517,21 @@ public class CompilerTest {
           """);
     }
 
+    @Test
+    public void testGlobalVariables() throws ParserException {
+        compilerOutput = Compiler.toHumanReadable(repository, """
+          import system;
+          
+          int test = 3;
+          
+          int main() {
+            string a = "hey";
+            int test = 4;
+            system.print("Global variable 'test' has a value of: " + test);
+          }
+          """);
+    }
+
     @After
     public void showResults() throws Exception {
         String[][] tokenized = Tokenizer.tokenize(compilerOutput);

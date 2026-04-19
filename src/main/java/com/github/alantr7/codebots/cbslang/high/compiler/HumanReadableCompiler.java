@@ -1,12 +1,9 @@
 package com.github.alantr7.codebots.cbslang.high.compiler;
 
-import com.github.alantr7.codebots.cbslang.exceptions.ParserException;
-import com.github.alantr7.codebots.cbslang.high.parser.Parser;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.*;
-import com.github.alantr7.codebots.cbslang.low.runtime.Program;
 import com.github.alantr7.codebots.cbslang.low.runtime.ProgramExecutor;
 import lombok.Getter;
 
@@ -37,6 +34,11 @@ public class HumanReadableCompiler extends Compiler<String> {
                 compileConstant("str", val.value);
         });
         compileSignatures();
+
+        // compile global variables
+        for (Declare globalVar : ast.globalsDeclares) {
+            compileVariableDeclare(globalVar);
+        }
 
         // compile main first
         List<Function> functions = new ArrayList<>(ast.functions.values());

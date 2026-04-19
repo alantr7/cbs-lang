@@ -35,6 +35,7 @@ public class Parser {
         this.tokens = tokens;
         this.context.scopes.push(new Scope());
         ast.constants.addAll(Arrays.asList(tokens.getConstants()));
+        this.context.getCurrentScope().nextVariableOffset = tokens.getConstants().length;
     }
 
     AST parse() throws ParserException {
@@ -56,7 +57,10 @@ public class Parser {
             // - global variables
             // - functions
 
-            if (nextToken.equals("import")) {
+            if (nextToken.equals(";")) {
+                tokens.advance();
+            }
+            else if (nextToken.equals("import")) {
                 parseImport();
             }
             else if (nextToken.equals("struct")) {
@@ -104,7 +108,10 @@ public class Parser {
             return;
         }
         if (differentiator.equals("=") || differentiator.equals(";") || differentiator.equals("[")) {
-            parseVariableDeclare(type, name, false);
+            Declare declare = parseVariableDeclare(type, name, false);
+            if (declare != null) {
+                ast.globalsDeclares.add(declare);
+            }
             return;
         }
     }
@@ -321,6 +328,7 @@ public class Parser {
         Variable variable = new Variable(type, context.scopes.size() == 1, context.getCurrentScope().nextVariableOffset, lengths);
         context.getCurrentScope().nextVariableOffset += length;
         context.getCurrentScope().variables.put(name, variable);
+
         if (!isForInit) {
             context.getCurrentScope().localVariables.put(name, variable);
         }

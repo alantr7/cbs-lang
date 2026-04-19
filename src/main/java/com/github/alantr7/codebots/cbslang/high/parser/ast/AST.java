@@ -4,6 +4,7 @@ import com.github.alantr7.codebots.cbslang.high.parser.TokenQueue;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Function;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.FunctionSignature;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Variable;
+import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.Declare;
 
 import java.util.*;
 
@@ -15,7 +16,7 @@ public class AST {
 
     public Map<String, Function> functions = new HashMap<>();
 
-    public Map<String, Variable> globals = new HashMap<>();
+    public List<Declare> globalsDeclares = new LinkedList<>();
 
     public int getFunctionOffset(FunctionSignature signature) {
         return signatures.indexOf(signature);
