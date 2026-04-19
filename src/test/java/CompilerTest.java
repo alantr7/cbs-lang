@@ -540,7 +540,7 @@ public class CompilerTest {
           int main() {
             for (int i = 0; i < 10; i++){
                 for (int j = 0; j < 5; j++){
-                    system.print("i" + i + "j" + j);
+                    system.print(i + ", " + j);
                 }
             }
           }

@@ -27,17 +27,32 @@ public class Tokenizer {
             tokens.add(command);
 
             trimmed = trimmed.substring(separator + 1);
-            while (trimmed.contains(",")) {
-                String operand = trimmed.substring(0, trimmed.indexOf(",")).trim();
-                tokens.add(operand);
-
-                trimmed = trimmed.substring(trimmed.indexOf(",") + 1).trim();
-            }
             if (trimmed.contains(";")) {
                 trimmed = trimmed.substring(0, trimmed.indexOf(";")).trim();
             }
-            if (!trimmed.isEmpty())
-                tokens.add(trimmed);
+
+            String word = "";
+            boolean isQuotes = false;
+
+            for (int i = 0; i < trimmed.length(); i++) {
+                char ch = trimmed.charAt(i);
+                if (ch == '"') {
+                    isQuotes = !isQuotes;
+                } else if (!isQuotes) {
+                    if (ch == ' ') {
+                        tokens.add(word);
+                        word = "";
+                        continue;
+                    } else if (ch == ',') {
+                        continue;
+                    }
+                }
+
+                word += ch;
+            }
+
+            if (!word.isEmpty())
+                tokens.add(word);
 
             tokenizedLines.add(tokens.toArray(String[]::new));
         }
