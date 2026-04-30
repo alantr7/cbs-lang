@@ -1,7 +1,7 @@
 import com.github.alantr7.codebots.cbslang.exceptions.ParserException;
 import com.github.alantr7.codebots.cbslang.high.compiler.Compiler;
-import com.github.alantr7.codebots.cbslang.high.compiler.HumanReadableCompiler;
-import com.github.alantr7.codebots.cbslang.high.parser.Parser;
+import com.github.alantr7.codebots.cbslang.low.compression.ByteCodeCompressor;
+import com.github.alantr7.codebots.cbslang.low.compression.ByteCodeDecompressor;
 import com.github.alantr7.codebots.cbslang.low.runtime.Program;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.ModuleRepository;
 import com.github.alantr7.codebots.cbslang.low.runtime.modules.standard.SystemModule;
@@ -93,12 +93,12 @@ public class CompilerTest {
     @Test
     public void testFunctionWithExpressionAccessingAVariable() throws ParserException {
         compilerOutput = Compiler.toHumanReadable(repository, """
-          int main() {
-            int a = 5;
-            int b = a;
-            
-            return b * 3;
-          }
+                import bot;
+                
+                int main() {
+                    int a;
+                    a = 5123;
+                }
           """);
     }
 
@@ -551,15 +551,23 @@ public class CompilerTest {
 
     @After
     public void showResults() throws Exception {
+        Files.writeString(new File("./output.txt").toPath(), compilerOutput);
         String[][] tokenized = Tokenizer.tokenize(compilerOutput);
-        Program program = new Program(tokenized, repository);
+        ByteCodeCompressor compressor = new ByteCodeCompressor();
+        compressor.compress(tokenized);
+        Files.write(new File("./compressed.txt").toPath(), compressor.getOutput());
+
+        byte[] compressed = Files.readAllBytes(new File("./compressed.txt").toPath());
+        ByteCodeDecompressor decompressor = new ByteCodeDecompressor(compressed);
+        String[] decompressed = decompressor.decompress();
+
+        Program program = new Program(Tokenizer.tokenize(String.join("\n", decompressed)), repository);
         System.out.println(compilerOutput);
 
         program.setMode(Program.RUN_UNTIL_END);
         program.run();
         program.getState().dump();
 
-        Files.writeString(new File("./output.txt").toPath(), compilerOutput);
 
         AtomicInteger idx = new AtomicInteger();
         String memory = Arrays.stream(program.getState().getMemory()).map((data) -> {
@@ -569,6 +577,9 @@ public class CompilerTest {
             return idx.getAndIncrement() + "\t" + data.getDataType().getTypeName() + "\t" + data.getValue();
         }).collect(Collectors.joining("\n"));
         Files.writeString(new File("./memory.txt").toPath(), memory);
+
+
+        Files.write(new File("./decompressed.txt").toPath(), String.join("\n", decompressed).getBytes());
     }
 
 }

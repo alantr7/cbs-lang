@@ -70,9 +70,7 @@ public class ProgramExecutor {
         Data value = program.state.locate(new String[] { instruction[1] });
 
         int esp = (int) program.state.REGISTER_ESP.getValue();
-
         program.state.locate(esp++).setValue((DataType<Object>) value.getDataType(), value.getValue());
-
         program.state.REGISTER_ESP.setValue(DataType.INT, esp);
     }
 
@@ -226,8 +224,6 @@ public class ProgramExecutor {
             case MOD -> current % sourceVal;
             default -> 0;
         };
-
-//        System.out.println(current + " " + op + " " + sourceVal + " = " + result);
 
         DataType<?> resultType = (destination.getDataType() == DataType.FLOAT || source.getDataType() == DataType.FLOAT ? DataType.FLOAT : DataType.INT);
         Number resultCasted;

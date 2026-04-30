@@ -1,8 +1,6 @@
 package com.github.alantr7.codebots.cbslang.high.compiler;
 
 import com.github.alantr7.bytils.buffer.ByteArrayWriter;
-import com.github.alantr7.codebots.cbslang.exceptions.ParserException;
-import com.github.alantr7.codebots.cbslang.high.parser.Parser;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.AST;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.expressions.*;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Function;
@@ -10,7 +8,6 @@ import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.FunctionSigna
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Primitive;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.objects.Scope;
 import com.github.alantr7.codebots.cbslang.high.parser.ast.statements.*;
-import com.github.alantr7.codebots.cbslang.low.runtime.Program;
 import com.github.alantr7.codebots.cbslang.low.runtime.ProgramExecutor;
 import lombok.Getter;
 
