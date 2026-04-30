@@ -46,8 +46,12 @@ public class Data {
 
     @SuppressWarnings("unchecked")
     public void serialize(ByteArrayWriter buffer) {
-        buffer.writeU1(dataType.getSerializationId());
         serialize(buffer, (DataType<Object>) dataType, value);
+    }
+
+    @Override
+    public String toString() {
+        return dataType.getTypeName() + ": " + value;
     }
 
     public static <T> void serialize(ByteArrayWriter buffer, DataType<T> dataType, T value) {

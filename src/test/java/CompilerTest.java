@@ -93,8 +93,6 @@ public class CompilerTest {
     @Test
     public void testFunctionWithExpressionAccessingAVariable() throws ParserException {
         compilerOutput = Compiler.toHumanReadable(repository, """
-                import bot;
-                
                 int main() {
                     int a;
                     a = 5123;
