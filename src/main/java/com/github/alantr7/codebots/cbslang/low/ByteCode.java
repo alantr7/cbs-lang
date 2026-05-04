@@ -5,6 +5,7 @@ public class ByteCode {
     public static final byte DEFC           = 1;
     public static final byte IMPF           = 2;
     public static final byte DEFL           = 3;
+    public static final byte ALLOC          = 27;
     public static final byte MOV            = 4;
     public static final byte PUSH           = 5;
     public static final byte POP_VOID       = 6;

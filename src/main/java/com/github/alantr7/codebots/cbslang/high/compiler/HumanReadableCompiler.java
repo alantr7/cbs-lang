@@ -504,18 +504,18 @@ public class HumanReadableCompiler extends Compiler<String> {
 
         // generate array members
         if (declare.length != 1) {
-            String toPush;
-            if (declare.type == Primitive.INT)
-                toPush = "0";
-            else toPush = null;
-
-            if (toPush != null) {
-                for (int i = 0; i < declare.length; i++) {
-                    append("push " + toPush);
-                }
-            } else {
-                append("add esp, " + sum);
+            String type;
+            if (declare.type == Primitive.INT) {
+                type = "int";
             }
+            else if (declare.type == Primitive.FLOAT) {
+                type = "flt";
+            }
+            else if (declare.type == Primitive.STRING) {
+                type = "str";
+            }
+            else return;
+            append("alloc " + type + ", " + declare.length);
         }
         else if (declare.value != null) {
             compileExpression(declare.value);

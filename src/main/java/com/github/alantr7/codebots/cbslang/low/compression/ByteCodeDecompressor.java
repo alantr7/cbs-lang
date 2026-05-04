@@ -23,6 +23,7 @@ public class ByteCodeDecompressor {
                 case ByteCode.DEFC          -> handleDEFC(line);
                 case ByteCode.IMPF          -> handleIMPF(line);
                 case ByteCode.DEFL          -> handleDEFL(line);
+                case ByteCode.ALLOC         -> handleALLOC(line);
                 case ByteCode.MOV           -> handleMOV(line);
                 case ByteCode.PUSH          -> handlePUSH(line);
                 case ByteCode.POP_VOID,
@@ -83,6 +84,16 @@ public class ByteCodeDecompressor {
 
     private void handleDEFL(StringBuilder builder) {
         builder.append(reader.readShortString()).append(":");
+    }
+
+    private void handleALLOC(StringBuilder builder) {
+        int instruction = reader.readU1();
+        int count = reader.readU2();
+        switch (instruction) {
+            case ByteCode.DEFC_INT -> builder.append("alloc int, ").append(count).append("\n");
+            case ByteCode.DEFC_FLT -> builder.append("alloc flt, ").append(count).append("\n");
+            case ByteCode.DEFC_STR -> builder.append("alloc str, ").append(count).append("\n");
+        }
     }
 
     private void handleMOV(StringBuilder builder) {

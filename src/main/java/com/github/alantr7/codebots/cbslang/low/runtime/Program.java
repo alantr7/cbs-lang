@@ -96,6 +96,7 @@ public class Program {
             switch (command) {
                 case "defc" -> executor.handleDEFC(instruction);
                 case "impf" -> executor.handleIMPF(instruction);
+                case "alloc" -> executor.handleALLOC(instruction);
 
                 case "mov" -> executor.handleMOV(instruction);
                 case "push" -> executor.handlePUSH(instruction);

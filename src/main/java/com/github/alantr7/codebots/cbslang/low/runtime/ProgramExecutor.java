@@ -24,7 +24,7 @@ public class ProgramExecutor {
 
         DataType<?> dataType = switch (instruction[1]) {
             case "int"      -> DataType.INT;
-            case "flt"    -> DataType.FLOAT;
+            case "flt"      -> DataType.FLOAT;
             case "str"      -> DataType.STRING;
             default -> null;
         };
@@ -50,6 +50,38 @@ public class ProgramExecutor {
     void handleIMPF(String[] instruction) {
         assert instruction[0].equals("impf");
         program.state.IMPORTS.add(new AbstractMap.SimpleEntry<>(instruction[1], instruction[2]));
+    }
+
+    void handleALLOC(String[] instruction) {
+        assert instruction[0].equals("alloc");
+
+        DataType type;
+        Object value;
+        switch(instruction[1]) {
+            case "int" -> {
+                type = DataType.INT;
+                value = 0;
+            }
+            case "flt" -> {
+                type = DataType.FLOAT;
+                value = 0f;
+            }
+            case "str" -> {
+                type = DataType.STRING;
+                value = "";
+            }
+            default -> {
+                program.interrupt(new ExecutionException("Unknown type " + instruction[1]));
+                return;
+            }
+        };
+
+        int count = Integer.parseInt(instruction[2]);
+        int esp = (int) program.state.REGISTER_ESP.getValue();
+        for (int i = 0; i < count; i++) {
+            program.state.locate(esp + i).setValue(type, value);
+        }
+        program.state.REGISTER_ESP.setValue(DataType.INT, esp + count);
     }
 
     void handleMOV(String[] instruction) {

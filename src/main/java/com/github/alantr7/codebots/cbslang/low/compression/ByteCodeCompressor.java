@@ -12,6 +12,7 @@ public class ByteCodeCompressor {
             switch (line[0]) {
                 case "defc"             -> handleDEFC(line);
                 case "impf"             -> handleIMPF(line);
+                case "alloc"            -> handleALLOC(line);
                 case "mov"              -> handleMOV(line);
                 case "push"             -> handlePUSH(line);
                 case "pop"              -> handlePOP(line);
@@ -63,6 +64,12 @@ public class ByteCodeCompressor {
     private void handleDEFL(String[] instruction) {
         buffer.writeU1(ByteCode.DEFL);
         buffer.writeShortString(instruction[0].substring(0, instruction[0].length() - 1));
+    }
+
+    private void handleALLOC(String[] instruction) {
+        buffer.writeU1(ByteCode.ALLOC);
+        buffer.writeU1(typeToByte(instruction[1]));
+        buffer.writeU2(Integer.parseInt(instruction[2]));
     }
 
     private void handleMOV(String[] instruction) {
@@ -157,6 +164,15 @@ public class ByteCodeCompressor {
             buffer.writeU1(ByteCode.REF_REG);
             buffer.writeU1(getRegistry(token));
         }
+    }
+
+    private static byte typeToByte(String name) {
+        return switch (name) {
+            case "int" -> ByteCode.DEFC_INT;
+            case "flt" -> ByteCode.DEFC_FLT;
+            case "str" -> ByteCode.DEFC_STR;
+            default -> 0;
+        };
     }
 
     private static byte getRegistry(String name) {
