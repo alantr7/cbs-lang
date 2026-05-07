@@ -519,6 +519,13 @@ public class Parser {
                 expectsOperator = true;
             }
 
+            else if (ParserHelper.isFloat(next)) {
+                postfix.add(new Literal(Literal.FLOAT, Float.parseFloat(next)));
+                j++;
+
+                expectsOperator = true;
+            }
+
             else if (ParserHelper.isCastOperator(next)) {
                 postfix.add(new Cast(parseExpression(), next.equals("(int)") ? Primitive.INT : Primitive.FLOAT));
             }

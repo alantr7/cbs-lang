@@ -46,6 +46,10 @@ public class ParserHelper {
         return input.matches("-?\\d+");
     }
 
+    public static boolean isFloat(String input) {
+        return input.matches("-?((\\d+\\.\\d+f?)|(\\d+f))");
+    }
+
     public static boolean isBoolean(String input) {
         return input.equals("true") || input.equals("false");
     }

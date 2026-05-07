@@ -98,7 +98,7 @@ public class Tokenizer {
                 }
 
                 if (!token.isBlank()) {
-                    if (token.matches("(\\d+\\.\\d+)|(\\d+)f?") && tokens.size() > 1) {
+                    if (ParserHelper.isFloat(token) && tokens.size() > 1) {
                         String previous = tokens.get(tokens.size() - 1);
                         String previous2 = tokens.get(tokens.size() - 2);
 
@@ -109,11 +109,11 @@ public class Tokenizer {
                         }
 
                         // Turn token into a constant
-                        if (token.matches("-?((\\d+\\.\\d+f?)|(\\d+f))")) {
+                        if (ParserHelper.isFloat(token)) {
                             tokens.add("@" + constants.size());
                             constants.add(new TokenQueue.Constant(Primitive.FLOAT, token));
 
-                            start = i;
+                            start = i--;
                             continue;
                         }
                     }
