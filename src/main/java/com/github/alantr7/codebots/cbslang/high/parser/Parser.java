@@ -48,30 +48,34 @@ public class Parser {
             }
         }
 
-        while (!tokens.isEmpty()) {
-            String nextToken = tokens.peek();
+        int line = 0;
+        try {
+            while (!tokens.isEmpty()) {
+                line = tokens.getLine();
+                String nextToken = tokens.peek();
 
-            // allowed in root context:
-            // - imports
-            // - structs
-            // - global variables
-            // - functions
+                // allowed in root context:
+                // - imports
+                // - structs
+                // - global variables
+                // - functions
 
-            if (nextToken.equals(";")) {
-                tokens.advance();
-            }
-            else if (nextToken.equals("import")) {
-                parseImport();
-            }
-            else if (nextToken.equals("struct")) {
-                // parse struct
-                tokens.advance();
-            }
-            else {
-                // try to find out if it's a variable or a function
-                parseFunctionOrVariable();
-            }
+                if (nextToken.equals(";")) {
+                    tokens.advance();
+                } else if (nextToken.equals("import")) {
+                    parseImport();
+                } else if (nextToken.equals("struct")) {
+                    // parse struct
+                    tokens.advance();
+                } else {
+                    // try to find out if it's a variable or a function
+                    parseFunctionOrVariable();
+                }
 
+            }
+        } catch (ParserException exc) {
+            exc.setLine(line);
+            throw exc;
         }
 
         return ast;
