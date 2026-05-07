@@ -14,7 +14,7 @@ public class Tokenizer {
         List<TokenQueue.Constant> constants = new LinkedList<>();
 
         for (int i = 0; i < input.length; i++) {
-            var line = input[i];
+            var line = input[i].replace("\r", "");
             if (line.startsWith("//"))
                 continue;
 
