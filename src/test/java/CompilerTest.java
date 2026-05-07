@@ -547,6 +547,18 @@ public class CompilerTest {
           """);
     }
 
+    @Test
+    public void testDefaultInit() throws ParserException {
+        compilerOutput = Compiler.toHumanReadable(repository, """
+          import system;
+          
+          int main() {
+            int test;
+            system.print(test);
+          }
+          """);
+    }
+
     @After
     public void showResults() throws Exception {
         Files.writeString(new File("./output.txt").toPath(), compilerOutput);

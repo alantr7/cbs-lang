@@ -500,10 +500,9 @@ public class HumanReadableCompiler extends Compiler<String> {
 
     public void compileVariableDeclare(Declare declare) {
         builder.append("; Variable declare\n");
-        int sum = declare.length;
 
         // generate array members
-        if (declare.length != 1) {
+        if (declare.value == null) {
             String type;
             if (declare.type == Primitive.INT) {
                 type = "int";
@@ -517,11 +516,8 @@ public class HumanReadableCompiler extends Compiler<String> {
             else return;
             append("alloc " + type + ", " + declare.length);
         }
-        else if (declare.value != null) {
+        else {
             compileExpression(declare.value);
-            // todo: don't i need to pop here?
-        } else {
-            builder.append("add esp, ").append(sum).append("\n");
         }
     }
 
