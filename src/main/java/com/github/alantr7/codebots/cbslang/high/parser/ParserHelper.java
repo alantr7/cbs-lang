@@ -60,6 +60,8 @@ public class ParserHelper {
             case "="  -> 2; // maybe above NEEDS to be 1. check if breaks
             case "||" -> 3;
             case "&&" -> 4;
+            case "|" -> 5;
+            case "&" -> 6;
             case "<", ">", "==", "!=", "<=", ">=" -> 7;
             case "+", "-" -> 8;
             case "*", "/" -> 9;
