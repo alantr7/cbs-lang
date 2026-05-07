@@ -98,12 +98,12 @@ public class Tokenizer {
                 }
 
                 if (!token.isBlank()) {
-                    if (ParserHelper.isFloat(token) && tokens.size() > 1) {
+                    if (token.matches("((\\d+\\.\\d+f?)|(\\d+f?))") && tokens.size() > 1) {
                         String previous = tokens.get(tokens.size() - 1);
                         String previous2 = tokens.get(tokens.size() - 2);
 
                         // Check if it's a negative number
-                        if (previous.equals("-") && previous2.length() == 1 && isSymbol(previous2.charAt(0))) {
+                        if (previous.equals("-") && (ParserHelper.isKeyword(previous2) || previous2.equals(";") || ParserHelper.isOperator(previous2))) {
                             tokens.removeLast();
                             token = "-" + token;
                         }

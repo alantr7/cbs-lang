@@ -6,6 +6,13 @@ import java.util.Set;
 
 public class ParserHelper {
 
+    private static final Set<String> KEYWORDS = Set.of(
+      "int", "string", "float", "struct", "return", "continue", "break", "if", "else"
+    );
+    public static boolean isKeyword(String input) {
+        return KEYWORDS.contains(input);
+    }
+
     private static final Set<String> OPERATORS = Set.of(
       "(", ")",
       "*", "/",
