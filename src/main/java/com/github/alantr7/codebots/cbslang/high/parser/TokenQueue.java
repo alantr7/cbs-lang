@@ -25,8 +25,6 @@ public class TokenQueue {
 
         if (queue[0].length == 0)
             advance();
-
-        System.out.println(String.join("\n", Arrays.stream(queue).map(Arrays::toString).toArray(String[]::new)));
     }
 
     public String peek() {
