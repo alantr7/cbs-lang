@@ -78,6 +78,7 @@ public class Parser {
             throw exc;
         }
 
+        ast.signatures.removeIf(signature -> !context.usedFunctions.contains(signature.module + ":" + signature.name));
         return ast;
     }
 
@@ -724,6 +725,7 @@ public class Parser {
                 expect(tokens.next(), ",");
             }
 
+            context.usedFunctions.add(function.module + ":" + function.name);
             return new Call(function, Arrays.copyOf(arguments, argumentCount));
         }
         else {
