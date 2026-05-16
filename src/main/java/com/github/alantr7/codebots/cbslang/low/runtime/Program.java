@@ -10,8 +10,12 @@ import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class Program {
+
+    @Getter @Setter
+    private UUID processId;
 
     final ModuleRepository moduleRepository;
 
@@ -37,7 +41,8 @@ public class Program {
     @Getter
     Exception error;
 
-    public Program(String[][] instructions, ModuleRepository repository) {
+    public Program(UUID processId, String[][] instructions, ModuleRepository repository) {
+        this.processId = processId;
         this.moduleRepository = repository;
         this.instructions = instructions;
     }

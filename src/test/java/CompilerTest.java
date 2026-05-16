@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -571,7 +572,7 @@ public class CompilerTest {
         ByteCodeDecompressor decompressor = new ByteCodeDecompressor(compressed);
         String[] decompressed = decompressor.decompress();
 
-        Program program = new Program(Tokenizer.tokenize(String.join("\n", decompressed)), repository);
+        Program program = new Program(UUID.randomUUID(), Tokenizer.tokenize(String.join("\n", decompressed)), repository);
         System.out.println(compilerOutput);
 
         program.setMode(Program.RUN_UNTIL_END);
